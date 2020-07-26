@@ -4,9 +4,11 @@
 #include <time.h>
 #include <string.h>
 #include <stdbool.h>
-#include "animos.h"
+#include "../constantes.h"
+#include "../utiles/pedir_datos.h" 
+#include "../funcionalidades/animos.h"
 #include "defendiendo_torres.h"
-#include "utiles.h"
+#include "../basura/utiles.h"
 
 //  CONSTANTES DE JUEGO (!)
     static const char ENANO = 'G';
@@ -121,22 +123,6 @@
     const int MAX_INTENTOS = 20;
 //  CONSTANTES DE JUEGO (¡)
 
-// HEADER DE PEDIR DATOS (!)
-    #define MAX_MENSAJE 100
-    #define MAX_OPCIONES 10
-
-    static const char OPCION_SI[MAX_MENSAJE]="SI";
-    static const char OPCION_NO[MAX_MENSAJE]="NO";
-
-    // Funciones para pedir datos de distintos tipos
-    void pedir_int( int* dato, int min, int max, char mensaje[MAX_MENSAJE] );
-    void pedir_float( float* dato, float min, float max, char mensaje[MAX_MENSAJE] );
-    void pedir_char( char* dato, char opciones [MAX_OPCIONES], char nombre_opciones [MAX_OPCIONES][MAX_MENSAJE], int tope, char mensaje[MAX_MENSAJE] );
-    bool pedir_bool( char mensaje[MAX_MENSAJE] );
-    
-    void tocar_para_continuar();
-// HEADER DE PEDIR DATOS (¡)
-
 // HEADER DE MENU Y CONFIGURACION (!)
     
   // MENU
@@ -154,75 +140,21 @@
      * 3 > Opciones
      * 4 > Salir
      */
-    void menu( int* opcion );
+    static void menu( int* opcion );
 
   // CONFIGURACION
 
-    /*
-     * Tipo de dato que almacena parametros de configuracion
-     *  de un juego
-     */
-    typedef struct configuracion {
-
-        // tiempo entre turnos 
-        float velocidad;
-
-        // regeneracion de vida por nivel
-        int bonus_resistencia;
-
-        // utilidades 
-        bool saltear_niveles, invencible;
-
-        // colocar defensores automaticamente
-        bool auto_defensores; 
-
-        // parametros para los caminos
-        int complejidad, rareza_cruzado; 
-    } configuracion_t;
-
-    const configuracion_t CONFIGURACION_STANDAR ={
-        .velocidad = 0.4f,
-        .bonus_resistencia = 0,
-        .saltear_niveles = false, .invencible = false,
-        .auto_defensores = false,
-        .complejidad = 2, .rareza_cruzado = 2
-    };
-
-    const configuracion_t CONFIGURACION_DEBUG ={
-        .velocidad = 0.03f,
-        .bonus_resistencia = 3000,
-        .saltear_niveles = true, .invencible = true,
-        .auto_defensores = true,
-        .complejidad = 1, .rareza_cruzado = 1
-    };
-
-    const configuracion_t CONFIGURACION_MIN ={
-        .velocidad = 0.01f,
-        .bonus_resistencia = 0,
-        .saltear_niveles = false, .invencible = false,
-        .auto_defensores = false,
-        .complejidad = 1, .rareza_cruzado = 1
-    };
-
-    const configuracion_t CONFIGURACION_MAX ={
-        .velocidad = 1.0f,
-        .bonus_resistencia = 15000,
-        .saltear_niveles = true, .invencible = true,
-        .auto_defensores = true,
-        .complejidad = 5, .rareza_cruzado = 50
-    };
-
     // muestra opciones/configuracion
-    void mostrar_opciones( juego_t* juego, configuracion_t* configuracion );
+    static void mostrar_opciones( juego_t* juego, configuracion_t* configuracion );
 
     /*
      * pre: es llamada solo dentro de mostrar_opciones
      * post: muestra una interfaz para modificar la opcion seleccionada  
      */
-    void modificar_opcion_seleccionada( configuracion_t* configuracion, int opcion );
+    static void modificar_opcion_seleccionada( configuracion_t* configuracion, int opcion );
 
     // Inicializa la configuracion son los valores std
-    void iniciar_configuracion( configuracion_t* configuracion );   
+    static void iniciar_configuracion( configuracion_t* configuracion );
 // HEADER DE MENU Y CONFIGURACION (!)
 
 // HEADER JUEGO (!)
@@ -230,7 +162,7 @@
      * Comienza un nuevo juego
      * pre: recibe un juego inicializado
      */
-    void nuevo_juego( juego_t* juego , configuracion_t configuracion );  
+    static void nuevo_juego( juego_t* juego , configuracion_t configuracion );  
 
     /*
      * Devuelve un nivel_t segun el nivel(numero)
@@ -240,87 +172,112 @@
      *  3 > Entrada Sur
      *  Default > Nivel vacio
      */
-    nivel_t nuevo_nivel( int nivel, configuracion_t configuracion );
+    static nivel_t nuevo_nivel( int nivel, configuracion_t configuracion );
 
     // Generan los caminos del nivel segun sus caracteristicas y la coniguracion
-    void generar_camino_1( nivel_t* nivel, caracteristicas_nivel_t caracteristicas_nivel , configuracion_t configuracion, bool cruzado );
-    void generar_extremos_camino_1( coordenada_t* entrada, coordenada_t* torre,
+    static void generar_camino_1( nivel_t* nivel, caracteristicas_nivel_t caracteristicas_nivel , configuracion_t configuracion, bool cruzado );
+    static void generar_extremos_camino_1( coordenada_t* entrada, coordenada_t* torre,
         caracteristicas_nivel_t caracteristicas_nivel, bool cruzado );
-    void generar_camino_2( nivel_t* nivel, caracteristicas_nivel_t caracteristicas_nivel , configuracion_t configuracion, bool cruzado );
-    void generar_extremos_camino_2( coordenada_t* entrada, coordenada_t* torre,
+    static void generar_camino_2( nivel_t* nivel, caracteristicas_nivel_t caracteristicas_nivel , configuracion_t configuracion, bool cruzado );
+    static void generar_extremos_camino_2( coordenada_t* entrada, coordenada_t* torre,
         caracteristicas_nivel_t caracteristicas_nivel, bool cruzado );
     
     // Genera un camino segun los parametros
-    void generar_camino(coordenada_t camino[MAX_LONGITUD_CAMINO], 
+    static void generar_camino(coordenada_t camino[MAX_LONGITUD_CAMINO], 
         int* tope_camino, coordenada_t entrada, coordenada_t torre, 
         int dimension, configuracion_t configuracion );
 
     // Muestra un mensaje al pasar de nivel
-    void mensaje_nuevo_nivel( int nivel );
+    static void mensaje_nuevo_nivel( int nivel );
 
     // Muestra un mensaje al finalizar un juego (ganar o perder)
-    void mensaje_terminar_juego( int estado );
+    static void mensaje_terminar_juego( int estado );
 
     // Pide al usuario que coloque defensores segun las especificaciones del nivel
-    void agregar_defensores( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
+    static void agregar_defensores( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
 
     // Coloqua defensores segun las especificaciones del nivel
-    void auto_agregar_defensores( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
+    static void auto_agregar_defensores( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
 
     // Pide al usuario que coloque un defensor segun las especificaciones del nivel
-    void pedir_un_defensor( juego_t* juego, 
+    static void pedir_un_defensor( juego_t* juego, 
         caracteristicas_nivel_t caracteristicas_nivel, char tipo, int* k );
     
     // Pide al usuario que coloque un defensor extra segun las especificaciones del nivel
-    void agregar_defensores_bonus( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
+    static void agregar_defensores_bonus( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
 
     // Subrutinas de agregar_defensores_bonus()
-    void obtener_tipo_defensor_bonus( juego_t juego, char* tipo,
+    static void obtener_tipo_defensor_bonus( juego_t juego, char* tipo,
         caracteristicas_nivel_t caracteristicas_nivel );
-    void colocar_defensores_bonus( juego_t* juego, char tipo,
+    static void colocar_defensores_bonus( juego_t* juego, char tipo,
         caracteristicas_nivel_t caracteristicas_nivel );
     
     // Coloca automaticamente un defensor extra segun las especificaciones del nivel
-    void auto_agregar_defensores_bonus( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
+    static void auto_agregar_defensores_bonus( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  );
 
     // Subrutinas de auto_agregar_defensores_bonus()
-    void auto_obtener_tipo_defensor_bonus( juego_t* juego, char* tipo,
+    static void auto_obtener_tipo_defensor_bonus( juego_t* juego, char* tipo,
         caracteristicas_nivel_t caracteristicas_nivel );
-    void auto_colocar_defensores_bonus( juego_t* juego, char tipo,
+    static void auto_colocar_defensores_bonus( juego_t* juego, char tipo,
         caracteristicas_nivel_t caracteristicas_nivel );
 
     // Devuelve las especificaciones del nivel pedido
-    caracteristicas_nivel_t buscar_caracteristicas_nivel( int nivel );
+    static caracteristicas_nivel_t buscar_caracteristicas_nivel( int nivel );
 
     // Muestra las variables que dependen de los animos y pregunta si se quieren iniciar
-    void iniciar_animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli);
+    static void iniciar_animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli);
  
     // Aplica acciones extra al comenzar un nivel segun la configuracion
-    void bonus_nuevo_nivel( juego_t* juego , configuracion_t configuracion );
+    static void bonus_nuevo_nivel( juego_t* juego , configuracion_t configuracion );
 
     // pasa el juego de nivel, 
     // aplicando los bonus correspoindientes a la configuracion
-    void pasar_de_nivel( juego_t* juego , configuracion_t configuracion, 
+    static void pasar_de_nivel( juego_t* juego , configuracion_t configuracion, 
         caracteristicas_nivel_t* caracteristicas_nivel  );
 
     // pasa el nivel de turno (se juega un turno), 
     // aplicando los bonus correspoindientes a la configuracion
-    void pasar_turno( juego_t* juego , configuracion_t configuracion, 
+    static void pasar_turno( juego_t* juego , configuracion_t configuracion, 
         caracteristicas_nivel_t caracteristicas_nivel, int turno  );
 
     // aplica al juego los bonus que corresponden previo a jugar un turno
-    void bonus_pre_turno( juego_t* juego , configuracion_t configuracion, 
+    static void bonus_pre_turno( juego_t* juego , configuracion_t configuracion, 
         caracteristicas_nivel_t caracteristicas_nivel, int turno  );
 
     // aplica al juego los bonus que corresponden posterior a jugar un turno
-    void bonus_post_turno( juego_t* juego , configuracion_t configuracion, 
+    static void bonus_post_turno( juego_t* juego , configuracion_t configuracion, 
         caracteristicas_nivel_t caracteristicas_nivel, int turno  );
 // HEADER JUEGO (¡)
 
-
-int main(){
+// main TP2 modificado
+static void juego_modificado(){
     srand( (unsigned int) time(NULL));
-    //srand(105774); 
+
+    configuracion_t configuracion;
+    iniciar_configuracion( &configuracion );
+
+    int viento = VIENTO_INICIAL;
+    int humedad = HUMEDAD_INICIAL;
+    char animo_legolas = ANIMO_INICIAL;
+    char animo_gimli = ANIMO_INICIAL;
+
+    juego_t juego;
+
+    if( 
+        pedir_bool( " Desea iniciar animos? " ) 
+    ){
+        iniciar_animos(&viento , &humedad , &animo_legolas , &animo_gimli);
+    }
+
+    inicializar_juego(&juego, viento, humedad, animo_legolas, animo_gimli);
+    nuevo_juego( &juego , configuracion );
+
+    return;
+}
+
+// main TP2
+static int juego_original(){
+    srand( (unsigned int) time(NULL));
 
     configuracion_t configuracion;
     iniciar_configuracion( &configuracion );
@@ -362,81 +319,14 @@ int main(){
 	return 0;
 }
 
-// PEDIR DATOS (!)
-    
-    void pedir_int( int* dato, int min, int max, char mensaje[MAX_MENSAJE] ){
+void jugar_juego(){
 
-        printf("%s\n",mensaje );
-        printf("[%i - %i] > ",min,max );
-
-        do{
-            scanf(" %i",dato);
-        } while( (*dato < min) || (*dato > max) );
-
-        return;    
-    }
-
-    void pedir_float( float* dato, float min, float max, char mensaje[MAX_MENSAJE] ){
-        
-        printf("%s\n",mensaje );
-        printf("[%f - %f] > ",min,max );
-
-        do{
-            scanf(" %f",dato);
-        } while( (*dato < min) || (*dato > max) );
-
-        return;
-    }
-
-    void pedir_char( char* dato, char opciones [MAX_OPCIONES], char nombre_opciones [MAX_OPCIONES][MAX_MENSAJE], int tope, char mensaje[MAX_MENSAJE] ){
-
-        int i;
-        printf("%s\n",mensaje );
-        for( i = 0 ; i < tope ; i++ )
-            printf(" [%c : %s] ",opciones[i],nombre_opciones[i] );
-
-        bool dato_valido = false;
-
-        do{
-            scanf(" %c",dato);
-            *dato = (char) toupper((*dato));
-
-            for( i = 0 ; i < tope ; i++ )
-                if( *dato == toupper(opciones[i])  )
-                    dato_valido = true;
-
-        } while( !dato_valido );
-
-        return;
-    }
-
-    bool pedir_bool( char mensaje[MAX_MENSAJE] ){
-
-        char opciones [MAX_OPCIONES]; 
-        char nombre_opciones [MAX_OPCIONES][MAX_MENSAJE];
-        int tope = 2;
-        opciones[0]= CONFIRMAR;
-        opciones[1]= CANCELAR;
-        strcpy(nombre_opciones[0],OPCION_SI);
-        strcpy(nombre_opciones[1],OPCION_NO);
-
-        char respuesta;
-        pedir_char(&respuesta,opciones,nombre_opciones,tope,mensaje);
-
-        if( respuesta == CONFIRMAR )
-            return true;
-
-        return false;
-    }
-
-    void tocar_para_continuar(){
-
-        printf("\n\t presione para continuar \n" );
-        char c;
-        fflush(stdout);
-        scanf("%c%c",&c,&c);
-    }
-// PEDIR DATOS (¡)
+    if( true )
+        juego_modificado();
+    else
+        juego_original();
+    return;
+}
 
 // MENU Y CONFIGURACION (!)
 
