@@ -1,7 +1,8 @@
 #include "constantes.h"
 	
 
-
+    const nombre_archivo_t RUTA_CONFIGURACIONES = "configuraciones/";
+    const nombre_archivo_t RUTA_CAMINOS = "caminos/";
 
 	/*
 		// RESISTENCIA al comenzar el juego de las torres 1 y 2

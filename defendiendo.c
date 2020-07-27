@@ -23,20 +23,17 @@
 
 int main(int argc , char *argv []){
 
-	if( argc < 2 ){
-		mostrar_opciones();
-		return 0;
-	}
-
 	if( argc == 3 && strcmp(argv[1],OPCION_CREAR_CONFIG)==0 ){
-		nombre_archivo_t config;
-		strcpy(config,argv[2]);
+		crear_config( argv[2] );
+		return 0;
 	}
 
 	if( strcmp(argv[1],OPCION_JUGAR )==0 ){
 		jugar_juego();
 	}
 
+	printf("%i\n", argc );
+	mostrar_opciones();
 	return 0;
 }
 

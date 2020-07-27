@@ -10,11 +10,13 @@
 	typedef char opcion_t[MAX_NOMBRE];
 	typedef char nombre_archivo_t[MAX_ARCHIVO];
 
+    const nombre_archivo_t RUTA_CONFIGURACIONES;
+    const nombre_archivo_t RUTA_CAMINOS;
+
 	/*
      * Tipo de dato que almacena parametros de configuracion
      *  de un juego
      */
-
     typedef struct configuracion {
 
         // RESISTENCIA al comenzar el juego de las torres 1 y 2
@@ -25,8 +27,8 @@
         int elfos_inicio [CANTIDAD_NIVELES];
 
         // CANTIDAD | COSTO T1 | COSTO T2 : de enanos y elfos extra
-        int elfos_extra [3];
         int enanos_extra [3];
+        int elfos_extra [3];
 
         // FALLO | CRITICO : de enanos y elfos
         int enanos_animo [2];
