@@ -1,7 +1,44 @@
 #include "constantes.h"
+	
+
+
+
+	/*
+		// RESISTENCIA al comenzar el juego de las torres 1 y 2
+        int resistencia_torres [2];
+
+        // CANTIDAD de enanos y elfos al principio de cada nivel
+        int enanos_inicio [CANTIDAD_NIVELES];
+        int elfos_inicio [CANTIDAD_NIVELES];
+
+        // CANTIDAD | COSTO T1 | COSTO T2 : de enanos y elfos extra
+        int elfos_extra [3];
+        int enanos_extra [3];
+
+        // FALLO | CRITICO : de enanos y elfos
+        int enanos_animo [2];
+        int elfos_animo [2];
+
+        // tiempo entre turnos 
+        float velocidad;
+
+        // archivo que guarda los caminos del juego
+        nombre_archivo_t caminos;
+    */
 
 	const configuracion_t CONFIGURACION_STANDAR ={
-        .velocidad = 0.4f,
+
+        .resistencia_torres = {5000,5000},
+        .enanos_inicio = {5,0,3,4},
+		.elfos_inicio = {0,5,3,4},
+		.elfos_extra = {10,50,0},
+		.enanos_extra = {10,0,50},
+		.enanos_animo = {50,50},
+		.elfos_animo = {50,50},
+        .velocidad = 1,
+        .caminos = "_caminos.txt",
+
+
         .bonus_resistencia = 0,
         .saltear_niveles = false, .invencible = false,
         .auto_defensores = false,
