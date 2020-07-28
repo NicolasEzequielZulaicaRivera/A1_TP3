@@ -108,4 +108,22 @@
 	 */
 	void mostrar_juego(juego_t juego);
 
+	/*
+	 * Muestra con formato un arreglo,
+	 * cambiando los caracteres que tengan un sprite asignado
+	 * por dicho sprite
+	 */
+	void mostrar_mapa( char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension);
+
+	// Compara si una coordenada esta dentro de los limites del mapa
+	bool coordenada_valida( coordenada_t coordenada );
+
+	/*
+	 * Compara si dos cordenadas son iguales
+	 * Devolvera:
+	 * > true si lo son
+	 * > false si no lo son
+	 */
+	bool misma_coordenada( coordenada_t p1, coordenada_t p2);
+
 #endif /* __DEFENDIENDO_TORRES_H__ */

@@ -12,14 +12,11 @@
 #include "../basura/utiles.h"
 
 //  CONSTANTES DE JUEGO (!)
-    static const char ENANO = 'G';
-    static const char ELFO = 'L';
     static const char NADIE = 'N';
 
     static const int ESTADO_JUGANDO = 0;
     static const int ESTADO_GANADO  = 1;
     //static const int ESTADO_PERDIDO =-1;
-    static const int INVALIDO =-1;
 
     static const char CONFIRMAR ='S';
     static const char CANCELAR ='X';

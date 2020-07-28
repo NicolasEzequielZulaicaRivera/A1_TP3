@@ -1,30 +1,6 @@
 #include <stdbool.h>
 #include "defendiendo_torres.h"
-
-
-//----- CONSTANTES COMUNES ----- (!)
-	static const char ANIMO_BUENO   = 'B';
-	static const char ANIMO_REGULAR = 'R';
-	static const char ANIMO_MALO    = 'M';
-	static const char VACIO  = ' ';
-	static const char FIL_PAR  = 'f';
-	static const char COL_PAR  = 'c';
-	static const char CAMINO = '#';
-	static const char CAMINO_1 = '[';
-	static const char CAMINO_2 = '(';
-	static const char CAMINO_1Y2 = '{';
-	static const char TORRE   = 'T';
-	static const char TORRE_1 = '1';
-	static const char TORRE_2 = '2';
-	static const char ENTRADA = 'E';
-	static const char ORCO  = 'O';
-	static const char ORCO_SANO= 'O';
-	static const char ORCO_DEBIL= 'o';
-	static const char ORCO_MORIBUNDO= 'd';
-	static const char ELFO  = 'L';
-	static const char ENANO = 'G';
-	//static const char SIN_TIPO = 'X';
-//----- CONSTANTES COMUNES ----- (¡)
+#include "../constantes.h"
 
 //----- MOTOR GRAFICO ----- (!)	
 	#include <string.h>
@@ -84,7 +60,8 @@
 	 * cambiando los caracteres que tengan un sprite asignado
 	 * por dicho sprite
 	 */
-	void mostrar_mapa( char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension);
+	// declarado en .h
+	// void mostrar_mapa( char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension);
 
 	// subrutinas de mostrar_mapa()
 	void mostrar_borde_vertical_mapa( int i );
@@ -124,21 +101,10 @@
 	static const int ESTADO_GANADO  = 1;
 	static const int ESTADO_PERDIDO =-1;
 
-	static const int INVALIDO =-1;
-	
-	static const int CANTIDAD_NIVELES = 4;
 	static const int CAMINO_MIN = 2;
 	
 	// calcula el dano critico en funcion del animo
 	int dano_critico( char animo );
-
-	/*
-	 * Compara si dos cordenadas son iguales
-	 * Devolvera:
-	 * > true si lo son
-	 * > false si no lo son
-	 */
-	bool misma_coordenada( coordenada_t p1, coordenada_t p2);
 	
 	/*
 	 * Busca una coordenada en un vector de coordenadas
@@ -198,9 +164,6 @@
 	void cargar_caminos_mapa( char mapa[MAX_FILAS][MAX_COLUMNAS], nivel_t nivel);
 	void cargar_enemigos_mapa( char mapa[MAX_FILAS][MAX_COLUMNAS], nivel_t nivel);
 	void cargar_defensores_mapa( char mapa[MAX_FILAS][MAX_COLUMNAS], nivel_t nivel);
-
-	// Compara si una coordenada esta dentro de los limites del mapa
-	bool coordenada_valida( coordenada_t coordenada );
 
 	// muestra datos relevantes el juego y nivel
 	void mostrar_datos(juego_t juego);

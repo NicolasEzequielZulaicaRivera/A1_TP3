@@ -74,7 +74,7 @@
 	void guardar_config( configuracion_t configuracion, nombre_archivo_t ruta );
 
 	// Guarda una configuracion segun datos ingresados por el usuario
-	void crear_config( nombre_archivo_t config ){
+	void crear_config( nombre_archivo_t nombre_archivo ){
 
 		configuracion_t configuracion = CONFIGURACION_STANDAR;
 		pedir_config( &configuracion);
@@ -82,7 +82,7 @@
 
 		nombre_archivo_t ruta;
 		strcpy(ruta, RUTA_CONFIGURACIONES);
-		strcat(ruta, config);
+		strcat(ruta, nombre_archivo);
 
 		guardar_config( configuracion, ruta );
 

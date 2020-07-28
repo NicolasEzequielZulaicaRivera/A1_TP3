@@ -4,6 +4,7 @@
 
 #include "constantes.h"
 #include "funcionalidades/configuracion.h"
+#include "funcionalidades/caminos.h"
 #include "juego/juego.h"
 
 // Constantes
@@ -13,6 +14,8 @@
 	static const opcion_t OPCION_JUGAR_GRABACION = "grabacion";
 
 	static const opcion_t OPCION_CREAR_CONFIG = "crear_configuracion";
+
+	static const opcion_t OPCION_CREAR_CAMINOS = "crear_camino";
 // Constantes
 
 // Declaraciones
@@ -25,6 +28,11 @@ int main(int argc , char *argv []){
 
 	if( argc == 3 && strcmp(argv[1],OPCION_CREAR_CONFIG)==0 ){
 		crear_config( argv[2] );
+		return 0;
+	}
+
+	if( argc == 3 && strcmp(argv[1],OPCION_CREAR_CAMINOS)==0 ){
+		crear_caminos( argv[2] );
 		return 0;
 	}
 

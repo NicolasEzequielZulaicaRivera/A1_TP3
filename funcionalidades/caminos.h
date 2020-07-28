@@ -10,13 +10,13 @@
 
 	typedef struct caminos {
 
-    	camino_t caminos[2];
+    	camino_t caminos[CANTIDAD_NIVELES][CANTIDAD_TORRES];
 
-    	int topes[2];
+    	int topes[CANTIDAD_NIVELES][CANTIDAD_TORRES];
 
     } caminos_t;
 
 	// Le permitirá al jugador crear los caminos de un juego para utilizar luego.
-	void crear_caminos();
+	void crear_caminos( nombre_archivo_t nombre_archivo );
 
 #endif

@@ -54,6 +54,6 @@
     const configuracion_t CONFIGURACION_MAX;
 
 	// Le permitirá al jugador crear una configuración inicial para utilizar luego.
-	void crear_config( nombre_archivo_t config );
+	void crear_config( nombre_archivo_t nombre_archivo );
 
 #endif
