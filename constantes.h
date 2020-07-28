@@ -10,7 +10,4 @@
 	typedef char opcion_t[MAX_NOMBRE];
 	typedef char nombre_archivo_t[MAX_ARCHIVO];
 
-
-    const nombre_archivo_t RUTA_CAMINOS;
-
 #endif
