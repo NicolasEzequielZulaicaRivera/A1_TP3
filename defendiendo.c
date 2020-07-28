@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 #include "constantes.h"
+#include "funcionalidades/configuracion.h"
 #include "juego/juego.h"
-#include "funcionalidades/crear_config.h"
 
 // Constantes
 	

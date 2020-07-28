@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../constantes.h"
+#include "../funcionalidades/configuracion.h"
 #include "../utiles/pedir_datos.h" 
 #include "../funcionalidades/animos.h"
 #include "defendiendo_torres.h"
