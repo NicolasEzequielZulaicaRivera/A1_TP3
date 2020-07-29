@@ -241,10 +241,18 @@
 				if( caminos->topes[i][j] > 2 ){
 					fprintf(archivo,"CAMINO=%i\n",j+1);
 
+					/*
 					for( int k=0; k < caminos->topes[i][j]; k++ )
 						fprintf(archivo,"%i;%i\n",
 							caminos->caminos[i][j][k].fil,
-							caminos->caminos[i][j][k].col);
+							caminos->caminos[i][j][k].col
+						);
+					*/
+					guardar_camino(
+						caminos->caminos[i][j], 
+						caminos->topes[i][j], 
+						archivo 
+					);
 				}
 			}
 		}
@@ -252,7 +260,6 @@
 		fclose(archivo);
 	}
 
-	// EN DESUSO
 	void guardar_camino(camino_t camino, int tope, FILE* archivo ){
 
 		for( int i=0; i<tope; i++ )
