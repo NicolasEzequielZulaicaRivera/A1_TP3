@@ -10,6 +10,8 @@
 
 	const nombre_archivo_t RUTA_CAMINOS = "caminos/";
 
+	const coordenada_t COORDENADA_INVALIDA = {.fil=INVALIDO, .col=INVALIDO};
+
 	const coordenada_t EXTREMOS_CAMINOS [CANTIDAD_NIVELES][CANTIDAD_TORRES][2] = 
 	{
 		{ // NIVEL 1 (Este)
@@ -30,6 +32,8 @@
 		}
 	};
 
+	enum movimiento { ARRIBA ='W', IZQUIERDA ='A' , ABAJO = 'S', DERECHA ='D' };
+
 // CONSTANTES
 
 // CREAR CAMINOS
@@ -43,7 +47,7 @@
 	// Subrutina para pedir al usuario los caminos de un nivel
 	void pedir_caminos_nivel(camino_t caminos [CANTIDAD_TORRES], int topes [CANTIDAD_TORRES]);
 
-	// Subrutina para pedir al usuario un camino
+	// Subrutina para pedir al usuario un camino al recibir un camino con extremos (tope >= 2)
 	// Mostrara por pantalla el camino mientras se introduce
 	void pedir_camino(camino_t camino, int* tope, 
 		char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension);
@@ -129,16 +133,35 @@
 	void pedir_camino(camino_t camino, int* tope, 
 		char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension){
 
-		if( *tope > 0 ){
-			mapa[ camino[0].fil ][ camino[0].col ] = ENTRADA;
-			mapa[ camino[*tope-1].fil ][ camino[*tope-1].col ] = TORRE;
+		if( *tope < 2 ) return;
+
+		coordenada_t entrada = camino[0];
+		coordenada_t torre = camino[*tope-1];
+
+		mapa[ camino[0].fil ][ camino[0].col ] = ENTRADA;
+		mapa[ camino[*tope-1].fil ][ camino[*tope-1].col ] = TORRE;
+
+		coordenada_t pos_actual = entrada;
+		coordenada_t pos_previa = COORDENADA_INVALIDA;
+		char movimiento;
+
+		int lim=0;
+		while( !misma_coordenada(pos_actual,torre) && (++lim)<100 ){
+
+			system("clear");
+			mostrar_mapa( mapa , dimension);
+
+			pedir_char( &movimiento, 
+				(char[MAX_OPCIONES]){ARRIBA,IZQUIERDA,ABAJO,DERECHA}, 
+				(char[MAX_OPCIONES][MAX_MENSAJE]){"ARRIBA","IZQUIERDA","ABAJO","DERECHA"}, 4, 
+				"MOVIMIENTO" );
+
+			pos_previa = pos_actual;
+			pos_actual = pos_previa;
+    
+			tocar_para_continuar();
+
 		}
-		
-		system("clear");
-		mostrar_mapa( mapa , dimension);
-		printf("\n %i,%i-%i,%i",camino[0].fil,camino[0].col,camino[*tope-1].fil,camino[*tope-1].col);
-		printf("\n %i",*tope);
-		tocar_para_continuar();
 	}
 
 	void guardar_caminos(caminos_t caminos, nombre_archivo_t ruta ){
