@@ -11,39 +11,46 @@
      */
     typedef struct configuracion {
 
-        // RESISTENCIA al comenzar el juego de las torres 1 y 2
-        int resistencia_torres [2];
+        // --- CONFIGURABLES ---
 
-        // CANTIDAD de enanos y elfos al principio de cada nivel
-        int enanos_inicio [CANTIDAD_NIVELES];
-        int elfos_inicio [CANTIDAD_NIVELES];
+            // RESISTENCIA al comenzar el juego de las torres 1 y 2
+            int resistencia_torres [2];                             ///1
 
-        // CANTIDAD | COSTO T1 | COSTO T2 : de enanos y elfos extra
-        int enanos_extra [3];
-        int elfos_extra [3];
+            // CANTIDAD de enanos y elfos al principio de cada nivel
+            int enanos_inicio [CANTIDAD_NIVELES];                   /// 2
+            int elfos_inicio [CANTIDAD_NIVELES];                    /// 3
 
-        // FALLO | CRITICO : de enanos y elfos
-        int enanos_animo [2];
-        int elfos_animo [2];
+            // CANTIDAD | COSTO T1 | COSTO T2 : de enanos y elfos extra
+            int enanos_extra [3];                                   /// 4
+            int elfos_extra [3];                                   /// 5
 
-        // tiempo entre turnos 
-        float velocidad;
+            // FALLO | CRITICO : de enanos y elfos
+            int enanos_animo [2];                                   /// 6
+            int elfos_animo [2];                                   /// 7
 
-        // archivo que guarda los caminos del juego
-        nombre_archivo_t caminos;
+            // tiempo entre turnos 
+            float velocidad;                                        /// 8
 
-        // regeneracion de vida por nivel
-        int bonus_resistencia;
+            // archivo que guarda los caminos del juego
+            nombre_archivo_t caminos;                               /// 9
+        // --- CONFIGURABLES ---
 
-        // utilidades 
-        bool saltear_niveles, invencible;
+        // --- UTILES --
 
-        // colocar defensores automaticamente
-        bool auto_defensores; 
+            // regeneracion de vida por nivel
+            int bonus_resistencia;
 
-        // parametros para los caminos
-        int complejidad, rareza_cruzado; 
+            // utilidades 
+            bool saltear_niveles, invencible;
+
+            // colocar defensores automaticamente
+            bool auto_defensores; 
+
+            // parametros para los caminos
+            int complejidad, rareza_cruzado; 
+        //--- UTILES --
     } configuracion_t;
+    #define CANTIDAD_ETIQUETAS 9
 
     const configuracion_t CONFIGURACION_STANDAR;
 
@@ -55,5 +62,11 @@
 
 	// Le permitirá al jugador crear una configuración inicial para utilizar luego.
 	void crear_config( nombre_archivo_t nombre_archivo );
+
+    // Cargara una configuracion de un archivo
+    void cargar_config( configuracion_t* configuracion, 
+        nombre_archivo_t nombre_archivo );
+
+    void prueba();
 
 #endif

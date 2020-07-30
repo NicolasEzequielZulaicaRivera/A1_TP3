@@ -36,13 +36,18 @@ int main(int argc , char *argv []){
 		return 0;
 	}
 
-	if( strcmp(argv[1],OPCION_JUGAR )==0 ){
+	if( argc > 1 && strcmp(argv[1],OPCION_JUGAR )==0 ){
 		jugar_juego();
+		return 0;
 	}
 
-	printf("%i\n", argc );
+	if( argc > 1 && strcmp(argv[1],"p" )==0 ){
+		prueba();
+		return 0;
+	}
+
 	mostrar_opciones();
-	return 0;
+	return INVALIDO;
 }
 
 // Implementaciones
