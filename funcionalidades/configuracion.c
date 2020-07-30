@@ -4,6 +4,7 @@
 #include  "../constantes.h"
 #include  "configuracion.h"
 #include  "../utiles/pedir_datos.h"
+#include  "../utiles/etiquetas.h"
 
 // CONSTANTES
 
@@ -13,20 +14,21 @@
     
 	const configuracion_t CONFIGURACION_STANDAR ={
 
-        .resistencia_torres = {5000,5000},
-        .enanos_inicio = {5,0,3,4},
-		.elfos_inicio = {0,5,3,4},
-		.elfos_extra = {10,50,0},
-		.enanos_extra = {10,0,50},
+        .resistencia_torres = {6000,6000},
+        .enanos_inicio = {5-3,0,3,4},
+		.elfos_inicio = {0+3,5,3,4},
+		.enanos_extra = {10,50,0},
+		.elfos_extra = {10,0,50},
 		.enanos_animo = {50,50},
 		.elfos_animo = {50,50},
-        .velocidad = 1,
+        .velocidad = 0.3f,
         .caminos = "_caminos.txt",
 
+        .grabacion = "",
 
         .bonus_resistencia = 0,
         .saltear_niveles = false, .invencible = false,
-        .auto_defensores = false,
+        .auto_defensores = true,
         .complejidad = 2, .rareza_cruzado = 2
     };
 
@@ -60,24 +62,6 @@
 
 // ETIQUETAS
 
-	// Estrucura que describe las etiquetas que se encuentran en los archivos de configuracion
-	// debido a las limitaciones de C se utilizaran funciones para relacionarlas
-	typedef struct etiqueta_de_configuracion {
-
-		// indice de la etiqueta
-		int indice;
-
-		// la etiqueta que se encontrara en  
-		char etiqueta [MAX_NOMBRE];
-
-		/*
-		 * Funcion que recibiendo la lectura posterior a la etiqueta 
-		 *  la cargara en la configuracion
-		 */
-		void (*cargar)
-		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );
-   	} etiqueta_de_configuracion_t;
-
    	// Declaracion de funciones para cargar componentes de la configuracion
 	   	void cargar_resistencia_torres
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//1
@@ -97,9 +81,14 @@
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//8
 	   	void cargar_caminos
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//9
+
+	   	// Funcion que carga enteros separados por un SEPARADOR
+	   	// en un vector (que es apuntado por el puntero)
+	   	// pre: la cantidad de elementos a leer es igual a los elementos en el vector
+	   	void cargar_enteros_separados( int* puntero_vector, char lectura [MAX_NOMBRE] );
    	// Declaracion de funciones para cargar componentes de la configuracion
 
-	const etiqueta_de_configuracion_t ETIQUETAS [CANTIDAD_ETIQUETAS] = {
+	static const etiqueta_t ETIQUETAS [CANT_ETQ_CONFIG] = {
 		{
 			.indice = 0,
 			.etiqueta = "RESISTENCIA_TORRES",
@@ -146,16 +135,6 @@
 			.cargar = cargar_caminos
 		},
 	};
-
-	const etiqueta_de_configuracion_t ETIQUETA_INVALIDA = {
-		.indice = INVALIDO,
-		.etiqueta = STRING_INVALIDO,
-		.cargar = NULL
-	};
-
-	// Devuelve una etiqueta (obj) segun su etiqueta (string)
-	// Buscara las etiquetas en la constante ETIQUETAS
-	etiqueta_de_configuracion_t buscar_etiqueta( char etiqueta [MAX_NOMBRE] );
 
 // ETIQUETAS
 
@@ -366,30 +345,43 @@
     void cargar_config( configuracion_t* configuracion, 
         nombre_archivo_t nombre_archivo ){
 
+		configuracion_t aux = *configuracion;
+
 		*configuracion = CONFIGURACION_STANDAR;
 
 		nombre_archivo_t ruta;
 		strcpy(ruta, RUTA_CONFIGURACIONES);
 		strcat(ruta, nombre_archivo);
 
-		cargar_config_archivo( configuracion, ruta );  	
+
+		cargar_config_archivo( configuracion, ruta ); 
+
+		// Correcciones 
+		strcpy(configuracion->grabacion, aux.grabacion);	
+		configuracion->auto_defensores = aux.auto_defensores;	
     }
 
     void cargar_config_archivo( configuracion_t* configuracion, 
         nombre_archivo_t ruta ){
 
     	char etiqueta [MAX_NOMBRE], lectura [MAX_NOMBRE] ;
-    	etiqueta_de_configuracion_t etiqueta_de_configuracion;
+    	etiqueta_t etiqueta_de_configuracion;
+
 
     	FILE* archivo = fopen( ruta, "r" );
 
-    	printf("\n\n");
+		if( !archivo ){
+
+			printf(" No existe el archivo de configuracion \n");
+			return;
+		} 
 
     	while( 
     		fscanf( archivo, "%[^=]=%[^\n]\n", etiqueta, lectura  ) != EOF 
     	){
 
-	    	etiqueta_de_configuracion = buscar_etiqueta( etiqueta );
+	    	etiqueta_de_configuracion = buscar_etiqueta( etiqueta,
+	    		ETIQUETAS, CANT_ETQ_CONFIG );
 
 	    	etiqueta_de_configuracion.cargar(configuracion,lectura);
     	}
@@ -400,27 +392,16 @@
 
 // ETIQUETAS
 
-    etiqueta_de_configuracion_t buscar_etiqueta( char etiqueta [MAX_NOMBRE] ){
-
-    	for( int i = 0; i < CANTIDAD_ETIQUETAS; i++ ){
-
-    		if( strcmp( etiqueta, ETIQUETAS[i].etiqueta )==0 )
-    			return ETIQUETAS[i];
-    	}
-
-    	return ETIQUETA_INVALIDA;
-    }
-
     // Implementacion de funciones para cargar componentes de la configuracion
-	   	void cargar_enteros( int* puntero, char lectura [MAX_NOMBRE] ){
+	   	void cargar_enteros_separados( int* puntero_vector, char lectura [MAX_NOMBRE] ){
 
 	   		int aux;
 	   		char lectura_aux [MAX_NOMBRE];
 	   		do{
 		   		sscanf( lectura, "%i%s", &aux, lectura_aux );
 
-		   		*puntero=aux;
-		   		puntero++;
+		   		*puntero_vector=aux;
+		   		puntero_vector++;
 
 		   		lectura=strchr(lectura,SEPARADOR);
 		   		if( lectura )lectura ++;
@@ -431,37 +412,37 @@
 	   	void cargar_resistencia_torres
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->resistencia_torres, lectura );
+	   		cargar_enteros_separados( configuracion->resistencia_torres, lectura );
 	   	}
 	   	void cargar_enanos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->enanos_inicio, lectura );
+	   		cargar_enteros_separados( configuracion->enanos_inicio, lectura );
 	   	}
 	   	void cargar_elfos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->elfos_inicio, lectura );
+	   		cargar_enteros_separados( configuracion->elfos_inicio, lectura );
 	   	}
 	   	void cargar_enanos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->enanos_extra, lectura );
+	   		cargar_enteros_separados( configuracion->enanos_extra, lectura );
 	   	}
 	   	void cargar_elfos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->elfos_extra, lectura );
+	   		cargar_enteros_separados( configuracion->elfos_extra, lectura );
 	   	}
 	   	void cargar_enanos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->enanos_animo, lectura );
+	   		cargar_enteros_separados( configuracion->enanos_animo, lectura );
 	   	}
 	   	void cargar_elfos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		cargar_enteros( configuracion->elfos_animo, lectura );
+	   		cargar_enteros_separados( configuracion->elfos_animo, lectura );
 	   	}
 	   	void cargar_velocidad
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){

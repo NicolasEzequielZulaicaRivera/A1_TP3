@@ -3,6 +3,7 @@
 
 	#include <stdlib.h>
 	#include <stdio.h>
+	#include "../funcionalidades/configuracion.h"
 
 	#define MAX_FILAS 30
 	#define MAX_COLUMNAS 30
@@ -25,7 +26,9 @@
 		int resistencia_torre_1;
 		int resistencia_torre_2;
 		int enanos_extra;
+		int costo_enanos_extra[2];
 		int elfos_extra;
+		int costo_elfos_extra[2];
 	} torres_t;
 
 	typedef struct enemigo {
@@ -65,7 +68,7 @@
 	 * los ataques críticos y fallo de Legolas y Gimli.
 	 * NO inicializará el primer nivel.
 	 */
-	void inicializar_juego(juego_t* juego, int viento, int humedad, char animo_legolas, char animo_gimli);
+	void inicializar_juego(juego_t* juego, configuracion_t configuracion);
 
 	/*
 	 * Recibe un juego con todas sus estructuras válidas. 

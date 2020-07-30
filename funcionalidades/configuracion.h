@@ -35,6 +35,8 @@
             nombre_archivo_t caminos;                               /// 9
         // --- CONFIGURABLES ---
 
+            nombre_archivo_t grabacion;
+
         // --- UTILES --
 
             // regeneracion de vida por nivel
@@ -50,7 +52,7 @@
             int complejidad, rareza_cruzado; 
         //--- UTILES --
     } configuracion_t;
-    #define CANTIDAD_ETIQUETAS 9
+    #define CANT_ETQ_CONFIG 9
 
     const configuracion_t CONFIGURACION_STANDAR;
 

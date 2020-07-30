@@ -1,7 +1,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Werror -Wconversion -std=c99
-DEPS = basura/utiles.o
+DEPS = utiles/utiles.o
 GAME_FILES = *.c */*.c
 TEST= test.c
 GAME_NAME = defendiendo

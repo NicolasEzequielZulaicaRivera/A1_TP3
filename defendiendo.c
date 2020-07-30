@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "constantes.h"
 #include "funcionalidades/configuracion.h"
@@ -26,6 +27,8 @@
 
 int main(int argc , char *argv []){
 
+	srand( (unsigned int) time(NULL));
+
 	if( argc == 3 && strcmp(argv[1],OPCION_CREAR_CONFIG)==0 ){
 		crear_config( argv[2] );
 		return 0;
@@ -37,7 +40,8 @@ int main(int argc , char *argv []){
 	}
 
 	if( argc > 1 && strcmp(argv[1],OPCION_JUGAR )==0 ){
-		jugar_juego();
+
+		jugar( argc , argv );
 		return 0;
 	}
 

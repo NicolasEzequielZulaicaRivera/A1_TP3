@@ -82,29 +82,23 @@
 	static const int CRITICO_ELFO =  70;
 	static const int CRITICO_ENANO = 100;
 	static const int PROBABILIDAD_CRITICO_NULA =  0;
-	static const int PROBABILIDAD_CRITICO_MALA =  0;
-	static const int PROBABILIDAD_CRITICO_REGULAR = 10;
-	static const int PROBABILIDAD_CRITICO_BUENA = 25;
-
+	
 	static const int RESISTENCIA_ORCO  = 200;
     static const int RESISTENCIA_ORCO_RAND  = 100;
 	
-	static const int DIV_VIENTO_A_FALLO   = 2;
-	static const int DIV_HUMEADAD_A_FALLO = 2;
+	//static const int DIV_VIENTO_A_FALLO   = 2;
+	//static const int DIV_HUMEADAD_A_FALLO = 2;
 	
 	
-	static const int RESISTENICA_TORRE_INICIAL = 600;
-	static const int ELFOS_EXTRA_INICIAL  = 10;
-	static const int ENANOS_EXTRA_INICIAL = 10;
+	//static const int RESISTENICA_TORRE_INICIAL = 600;
+	//static const int ELFOS_EXTRA_INICIAL  = 10;
+	//static const int ENANOS_EXTRA_INICIAL = 10;
 	
 	static const int ESTADO_JUGANDO = 0;
 	static const int ESTADO_GANADO  = 1;
 	static const int ESTADO_PERDIDO =-1;
 
 	static const int CAMINO_MIN = 2;
-	
-	// calcula el dano critico en funcion del animo
-	int dano_critico( char animo );
 	
 	/*
 	 * Busca una coordenada en un vector de coordenadas
@@ -175,19 +169,26 @@
 //----- UTILES ----- (¡)
 
 //----- MOTOR DE JUEGO ----- (!)
-	void inicializar_juego(juego_t* juego, int viento, int humedad, char animo_legolas, char animo_gimli){
+	void inicializar_juego(juego_t* juego, configuracion_t configuracion){
 	
-		juego->critico_legolas = dano_critico(animo_legolas);
+		juego->torres.resistencia_torre_1 = configuracion.resistencia_torres[0];
+		juego->torres.resistencia_torre_2 = configuracion.resistencia_torres[1];
+
+		juego->torres.enanos_extra = configuracion.enanos_extra[0];
+		juego->torres.costo_enanos_extra[0] = configuracion.enanos_extra[1];
+		juego->torres.costo_enanos_extra[1] = configuracion.enanos_extra[2];
+
+		juego->torres.elfos_extra = configuracion.elfos_extra[0];
+		juego->torres.costo_elfos_extra[0] = configuracion.elfos_extra[1];
+		juego->torres.costo_elfos_extra[1] = configuracion.elfos_extra[2];
 	
-		juego->critico_gimli = dano_critico(animo_gimli);
+		juego->critico_gimli =  configuracion.enanos_animo[0];
+		juego->fallo_gimli = configuracion.enanos_animo[1];
+
+		juego->critico_legolas = configuracion.elfos_animo[0];
+		juego->fallo_legolas = configuracion.elfos_animo[1];
 	
-		juego->fallo_legolas = (viento / DIV_VIENTO_A_FALLO);
-		juego->fallo_gimli = (humedad / DIV_HUMEADAD_A_FALLO);
-	
-		juego->torres.resistencia_torre_1 = RESISTENICA_TORRE_INICIAL;
-		juego->torres.resistencia_torre_2 = RESISTENICA_TORRE_INICIAL;
-		juego->torres.elfos_extra = ELFOS_EXTRA_INICIAL;
-		juego->torres.enanos_extra = ENANOS_EXTRA_INICIAL;
+		
 
 		//NIVEL
 		juego->nivel.tope_camino_1 = 0;
@@ -296,17 +297,6 @@
 		cargar_mapa( mapa, juego.nivel );
 
 		mostrar_mapa(mapa, dim);
-	}
-	
-	int dano_critico( char animo ){
-
-		int dano_critico = 
-			(animo == ANIMO_BUENO)?   PROBABILIDAD_CRITICO_BUENA:
-			(animo == ANIMO_REGULAR)? PROBABILIDAD_CRITICO_REGULAR:
-			(animo == ANIMO_MALO)?    PROBABILIDAD_CRITICO_MALA:
-			PROBABILIDAD_CRITICO_NULA;
-
-		return dano_critico;
 	}
 
 	bool misma_coordenada( coordenada_t p1, coordenada_t p2){

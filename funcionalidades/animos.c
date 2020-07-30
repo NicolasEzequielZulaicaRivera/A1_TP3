@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "animos.h"
+#include "../constantes.h"
 ///Constantes
 
     /// Dia - Viento
@@ -58,6 +59,11 @@ static const int p_hasta_bueno   = 50;
 static const int p_hasta_regular = 35;
 static const int p_hasta_malo    = 20;
 
+static const int PROBABILIDAD_CRITICO_NULA =  0;
+static const int PROBABILIDAD_CRITICO_MALA =  0;
+static const int PROBABILIDAD_CRITICO_REGULAR = 10;
+static const int PROBABILIDAD_CRITICO_BUENA = 25;
+
 
 /// Declaracion de Funciones
 bool c_en_arreglo(char dato,const char valores_validos[],const int n_valores_validos);
@@ -73,8 +79,7 @@ void historia(int vel_viento, int humedad, char animo_legolas, char animo_gimli)
 
 /// -- PROGRAMA PRINCIPAL --
 
-void animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli)
-{
+void animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli){
     /// Constantes & Variables
 
     // no se puede declarar global
@@ -140,6 +145,22 @@ void animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli
     //printf("\nResumen: %i %i %c %c.\n",*viento,*humedad,*animo_legolas,*animo_gimli);
 
     return;
+}
+
+int prob_critico( char animo ){
+
+    int dano_critico = 
+        (animo == ANIMO_BUENO)?   PROBABILIDAD_CRITICO_BUENA:
+        (animo == ANIMO_REGULAR)? PROBABILIDAD_CRITICO_REGULAR:
+        (animo == ANIMO_MALO)?    PROBABILIDAD_CRITICO_MALA:
+        PROBABILIDAD_CRITICO_NULA;
+
+    return dano_critico;
+}
+
+int prob_fallo( int parametro_ambiental ){
+
+    return parametro_ambiental/2;
 }
 
 /// Definicion de Funciones

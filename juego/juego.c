@@ -9,7 +9,8 @@
 #include "../utiles/pedir_datos.h" 
 #include "../funcionalidades/animos.h"
 #include "defendiendo_torres.h"
-#include "../basura/utiles.h"
+#include "../utiles/utiles.h"
+#include "../utiles/etiquetas.h"
 
 //  CONSTANTES DE JUEGO (!)
     static const char NADIE = 'N';
@@ -27,9 +28,6 @@
     static const int RESISTENCIA_ORCO_RAND  = 100;
 
     static const int RESISTENICA_TORRE_INICIAL = 600;
-
-    static const int COSTO_ENANO_EXTRA = 50;
-    static const int COSTO_ELFO_EXTRA = 50;
 
     static const float FACTOR_ESPERA_NUEVO_NIVEL = 3;
 
@@ -58,6 +56,9 @@
         // Cantidades de enanos y elfos iniciales en el nivel
         // orcos a entrar en el nivel
         int enanos, elfos, orcos;
+
+        int costo_enanos_extra[2];
+        int costo_elfos_extra[2];
 
         // Turnos cada los cuales se podra agregar un defensor extra
         int turnos_bonus;
@@ -121,39 +122,30 @@
     const int MAX_INTENTOS = 20;
 //  CONSTANTES DE JUEGO (¡)
 
-// HEADER DE MENU Y CONFIGURACION (!)
-    
-  // MENU
+// ETIQUETAS
 
-    #define OPCION_NUEVO_JUEGO          1
-    #define OPCION_INICIALIZAR_ANIMOS   2
-    #define OPCION_MOSTRAR_OPCIONES     3
-    #define OPCION_SALIR                4
-    #define OPCION_TESTEO               9
+    // Declaracion de funciones para cargar componentes del juego
+        void cargar_configuracion
+            ( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//1
+        void cargar_grabar
+            ( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//2
+    // Declaracion de funciones para cargar componentes del juego
 
-    /*
-     * Muestra un menu y actualiza la opcion elegida :
-     * 1 > Comenzar un nuevo juego
-     * 2 > Inicializar los animos / humedad / viento
-     * 3 > Opciones
-     * 4 > Salir
-     */
-    static void menu( int* opcion );
 
-  // CONFIGURACION
-
-    // muestra opciones/configuracion
-    static void mostrar_opciones( juego_t* juego, configuracion_t* configuracion );
-
-    /*
-     * pre: es llamada solo dentro de mostrar_opciones
-     * post: muestra una interfaz para modificar la opcion seleccionada  
-     */
-    static void modificar_opcion_seleccionada( configuracion_t* configuracion, int opcion );
-
-    // Inicializa la configuracion son los valores std
-    static void iniciar_configuracion( configuracion_t* configuracion );
-// HEADER DE MENU Y CONFIGURACION (!)
+    #define CANT_ETQ_JUGAR 2
+    static const etiqueta_t ETIQUETAS [CANT_ETQ_JUGAR] = {
+        {
+            .indice = 0,
+            .etiqueta = "config",
+            .cargar = cargar_configuracion
+        },
+        {
+            .indice = 1,
+            .etiqueta = "grabacion",
+            .cargar = cargar_grabar
+        }
+    };
+// ETIQUETAS
 
 // HEADER JUEGO (!)
     /* 
@@ -219,12 +211,14 @@
     static void auto_colocar_defensores_bonus( juego_t* juego, char tipo,
         caracteristicas_nivel_t caracteristicas_nivel );
 
+    // Decrementa la resistencia de las torres segun las caracteristicas del nivel
+    //  y el defensor colocado
+    static void cobrar_defensores_bonus( juego_t* juego, char tipo,
+        caracteristicas_nivel_t caracteristicas_nivel );
+
     // Devuelve las especificaciones del nivel pedido
     static caracteristicas_nivel_t buscar_caracteristicas_nivel( int nivel );
 
-    // Muestra las variables que dependen de los animos y pregunta si se quieren iniciar
-    static void iniciar_animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli);
- 
     // Aplica acciones extra al comenzar un nivel segun la configuracion
     static void bonus_nuevo_nivel( juego_t* juego , configuracion_t configuracion );
 
@@ -232,6 +226,10 @@
     // aplicando los bonus correspoindientes a la configuracion
     static void pasar_de_nivel( juego_t* juego , configuracion_t configuracion, 
         caracteristicas_nivel_t* caracteristicas_nivel  );
+
+    // Carga las caracteristicas correspondientes de la configuracion en las caracteristicas del nivel
+    void cargar_caracteristicas_nivel( configuracion_t configuracion, 
+        caracteristicas_nivel_t* caracteristicas_nivel );
 
     // pasa el nivel de turno (se juega un turno), 
     // aplicando los bonus correspoindientes a la configuracion
@@ -247,12 +245,8 @@
         caracteristicas_nivel_t caracteristicas_nivel, int turno  );
 // HEADER JUEGO (¡)
 
-// main TP2 modificado
-static void juego_modificado(){
-    srand( (unsigned int) time(NULL));
-
-    configuracion_t configuracion;
-    iniciar_configuracion( &configuracion );
+// jugar juego segun la configuracion
+static void jugar_juego( configuracion_t configuracion ){
 
     int viento = VIENTO_INICIAL;
     int humedad = HUMEDAD_INICIAL;
@@ -264,178 +258,40 @@ static void juego_modificado(){
     if( 
         pedir_bool( " Desea iniciar animos? " ) 
     ){
-        iniciar_animos(&viento , &humedad , &animo_legolas , &animo_gimli);
+        animos(&viento , &humedad , &animo_legolas , &animo_gimli);
+        configuracion.enanos_animo[0] = prob_fallo(humedad);
+        configuracion.enanos_animo[1] = prob_critico(animo_gimli);
+        configuracion.elfos_animo[0] = prob_fallo(viento);
+        configuracion.elfos_animo[1] = prob_critico(animo_legolas);
     }
 
-    inicializar_juego(&juego, viento, humedad, animo_legolas, animo_gimli);
+    inicializar_juego(&juego, configuracion);
     nuevo_juego( &juego , configuracion );
 
     return;
 }
 
-// main TP2
-static int juego_original(){
-    srand( (unsigned int) time(NULL));
+void jugar( int argc , char *argv [] ){
 
-    configuracion_t configuracion;
-    iniciar_configuracion( &configuracion );
+    configuracion_t configuracion = CONFIGURACION_STANDAR;
+    etiqueta_t etiqueta_de_juego;
+    char etiqueta [MAX_NOMBRE], lectura [MAX_NOMBRE];
 
-    int viento = VIENTO_INICIAL;
-    int humedad = HUMEDAD_INICIAL;
-    char animo_legolas = ANIMO_INICIAL;
-    char animo_gimli = ANIMO_INICIAL;
+    for( int i = 2; i < argc; i++ ){
 
-    juego_t juego;
+        sscanf( argv[i], "%[^=]=%s", etiqueta, lectura );
 
-    int opcion = OPCION_INICIALIZAR_ANIMOS;
+        etiqueta_de_juego = buscar_etiqueta( etiqueta,
+                ETIQUETAS, CANT_ETQ_CONFIG );
 
-	while( opcion != OPCION_SALIR ){
-        menu( &opcion );
+        etiqueta_de_juego.cargar(&configuracion,lectura);
 
-        switch( opcion ){
-
-            case OPCION_TESTEO:
-                opcion = OPCION_NUEVO_JUEGO;
-                configuracion = CONFIGURACION_DEBUG;
-
-            case OPCION_NUEVO_JUEGO:
-                inicializar_juego(&juego, viento, humedad, animo_legolas, animo_gimli);
-                nuevo_juego( &juego , configuracion );
-            break;
-
-            case OPCION_INICIALIZAR_ANIMOS:
-                iniciar_animos(&viento , &humedad , &animo_legolas , &animo_gimli);
-            break;
-
-            case OPCION_MOSTRAR_OPCIONES:
-                mostrar_opciones( &juego, &configuracion );
-            break;
-
-        }
     }
 
-	return 0;
-}
+    jugar_juego( configuracion );
 
-void jugar_juego(){
-
-    if( true )
-        juego_modificado();
-    else
-        juego_original();
     return;
 }
-
-// MENU Y CONFIGURACION (!)
-
-    void menu( int* opcion ){
-
-        system("clear");
-        printf("\n");
-        printf("----------------------------------------------------\n");
-        printf("-------------  DEFENDIENDO LAS TORRES  -------------\n");
-        printf("----------------------------------------------------\n");
-        printf("\n");
-        printf("%i: Nuevo Juego \n", OPCION_NUEVO_JUEGO);
-        printf("%i: Animos \n", OPCION_INICIALIZAR_ANIMOS);
-        printf("%i: Opciones \n", OPCION_MOSTRAR_OPCIONES);
-        printf("%i: Salir \n", OPCION_SALIR);
-
-        char respuesta[20];
-        scanf("%s",respuesta);
-        *opcion = respuesta[0]-48;
-    }
-
-    void mostrar_opciones( juego_t* juego , configuracion_t* configuracion ){
-
-        int opcion = 0;
-        while( opcion != 8 ){
-            system("clear");
-            printf("\n");
-            printf("----------------------------------------------------\n");
-            printf("-------------         OPCIONES         -------------\n");
-            printf("----------------------------------------------------\n");
-            printf("\n");
-            printf("1: Tiempo entre turnos - [ESPERA : %f] \n",configuracion->velocidad);
-            printf("2: Regeneracion por nivel - [BONUS : %i]\n",configuracion->bonus_resistencia);
-            printf("3: Complejidad de niveles - [COMPLEJIDAD : %i]\n",configuracion->complejidad);
-            printf("4: Rareza de niveles cruzados - [RAREZA : %i]\n",configuracion->rareza_cruzado);
-            printf("5: Auto posicionar defensores - [ %c ] \n", 
-                    ( (configuracion->auto_defensores)?CONFIRMAR:CANCELAR ) );
-            printf("6: Invencibilidad - [ %c ] \n", 
-                    ( (configuracion->invencible)?CONFIRMAR:CANCELAR ) );
-            printf("7: Saltear niveles - [ %c ] \n", 
-                    ( (configuracion->saltear_niveles)?CONFIRMAR:CANCELAR ) );
-            printf("8: Volver \n");
-
-            char respuesta[MAX_MENSAJE];
-            scanf("%s",respuesta);
-            opcion = respuesta[0]-48;
-
-            modificar_opcion_seleccionada( configuracion, opcion );
-        }
-        return;
-    }
-
-    void modificar_opcion_seleccionada( configuracion_t* configuracion, int opcion ){
-        
-        char mensaje[MAX_MENSAJE];
-
-        switch( opcion ){
-            case 1:
-                sprintf(mensaje," Ingrese la FRECUENCIA");
-                pedir_float( &(configuracion->velocidad), 
-                    CONFIGURACION_MIN.velocidad, 
-                    CONFIGURACION_MAX.velocidad, 
-                    mensaje );
-            break;
-
-            case 2:
-                sprintf(mensaje," Ingrese el BONUS");
-                pedir_int( &(configuracion->bonus_resistencia), 
-                    CONFIGURACION_MIN.bonus_resistencia, 
-                    CONFIGURACION_MAX.bonus_resistencia, 
-                    mensaje );
-            break;
-
-            case 3:
-                sprintf(mensaje,"Ingrese la COMPLEJIDAD");
-                pedir_int( &(configuracion->complejidad), 
-                    CONFIGURACION_MIN.complejidad, 
-                    CONFIGURACION_MAX.complejidad, 
-                    mensaje );
-            break;
-
-            case 4:
-                sprintf(mensaje,"Ingrese la RAREZA");
-                pedir_int( &(configuracion->rareza_cruzado), 
-                    CONFIGURACION_MIN.rareza_cruzado, 
-                    CONFIGURACION_MAX.rareza_cruzado, 
-                    mensaje );
-            break;
-
-            case 5:
-                sprintf(mensaje,"Auto posicionar defensores");
-                configuracion->auto_defensores = pedir_bool(mensaje);
-            break;
-
-            case 6:
-                sprintf(mensaje,"Ser invencible");
-                configuracion->invencible = pedir_bool(mensaje);
-            break;
-
-            case 7:
-                sprintf(mensaje,"Saltear niveles");
-                configuracion->saltear_niveles = pedir_bool(mensaje);
-            break;
-        }   
-    }
-
-    void iniciar_configuracion( configuracion_t* configuracion ){
-        
-        *configuracion = CONFIGURACION_STANDAR;
-    }
-// MENU Y CONFIGURACION (!)
 
 // JUEGO (!)
 
@@ -474,6 +330,8 @@ void jugar_juego(){
 
         juego->nivel_actual ++;
         *caracteristicas_nivel = buscar_caracteristicas_nivel( juego->nivel_actual );
+        cargar_caracteristicas_nivel( configuracion,caracteristicas_nivel );
+
         juego->nivel = nuevo_nivel( juego->nivel_actual, configuracion );
         mensaje_nuevo_nivel( juego->nivel_actual );
 
@@ -489,6 +347,15 @@ void jugar_juego(){
 
         mostrar_juego( *juego );
         detener_el_tiempo( configuracion.velocidad * FACTOR_ESPERA_NUEVO_NIVEL );
+    }
+
+    void cargar_caracteristicas_nivel( configuracion_t configuracion, 
+        caracteristicas_nivel_t* caracteristicas_nivel ){
+
+        caracteristicas_nivel->costo_enanos_extra[0] = configuracion.enanos_extra[1];
+        caracteristicas_nivel->costo_enanos_extra[1] = configuracion.enanos_extra[2];
+        caracteristicas_nivel->costo_elfos_extra[0] = configuracion.elfos_extra[1];
+        caracteristicas_nivel->costo_elfos_extra[1] = configuracion.elfos_extra[2];
     }
 
     void pasar_turno( juego_t* juego , configuracion_t configuracion, 
@@ -831,6 +698,8 @@ void jugar_juego(){
             return;
 
         colocar_defensores_bonus( juego, tipo, caracteristicas_nivel );
+
+        cobrar_defensores_bonus( juego, tipo, caracteristicas_nivel );
     }
 
     void obtener_tipo_defensor_bonus( juego_t juego, char* tipo,
@@ -851,8 +720,10 @@ void jugar_juego(){
         mostrar_juego(juego);
         printf("\n PUEDE COLOCAR UN DEFENSOR EXTRA \n");
         printf(" COSTO: ");
-        if(enanos) printf(" Enanos: %i Hp de la torre 1 .",COSTO_ENANO_EXTRA);
-        if(elfos) printf(" Elfo: %i Hp de la torre 2 .",COSTO_ELFO_EXTRA);
+        if(enanos) printf(" Enanos: %i hp T1, %i hp T2 .",
+            juego.torres.costo_enanos_extra[0],juego.torres.costo_enanos_extra[1]);
+        if(elfos) printf(" Elfo: %i hp T1, %i hp T2 .",
+            juego.torres.costo_elfos_extra[0],juego.torres.costo_elfos_extra[1]);
         printf("\n\n");
 
         tope=0;
@@ -913,6 +784,8 @@ void jugar_juego(){
         auto_obtener_tipo_defensor_bonus( juego, &tipo, caracteristicas_nivel );
         
         auto_colocar_defensores_bonus( juego, tipo, caracteristicas_nivel );
+
+        cobrar_defensores_bonus( juego, tipo, caracteristicas_nivel );
     }
 
     void auto_obtener_tipo_defensor_bonus( juego_t* juego, char* tipo,
@@ -971,6 +844,24 @@ void jugar_juego(){
         }
     }
 
+    void cobrar_defensores_bonus( juego_t* juego, char tipo,
+        caracteristicas_nivel_t caracteristicas_nivel ){
+
+        int dano[2]={0,0}, i;
+
+        if( tipo == ENANO )
+            for( i=0; i<CANTIDAD_TORRES; i++)
+                dano[i] += caracteristicas_nivel.costo_enanos_extra[i];
+        
+        if( tipo == ELFO )
+            for( i=0; i<CANTIDAD_TORRES; i++)
+                dano[i] += caracteristicas_nivel.costo_enanos_extra[i];
+
+        juego->torres.resistencia_torre_1 -= dano[0];
+        juego->torres.resistencia_torre_2 -= dano[1];
+
+    }
+
     caracteristicas_nivel_t buscar_caracteristicas_nivel( int nivel ){
 
         caracteristicas_nivel_t caracteristicas_nivel;
@@ -987,23 +878,21 @@ void jugar_juego(){
 
         return caracteristicas_nivel;
     }
-
-    void iniciar_animos(int* viento , int* humedad , char* animo_legolas , char* animo_gimli){
-
-        system("clear");
-        printf("\n");
-        printf("----------------------------------------------------\n");
-        printf("-------------          ANIMOS          -------------\n");
-        printf("----------------------------------------------------\n");
-        printf("\n");
-        printf("> Viento : %i \n",*viento);
-        printf("> Humedad : %i \n",*humedad);
-        printf("> Animo Legolas : %c \n",*animo_legolas);
-        printf("> Animo Gimli : %c \n",*animo_gimli);
-        printf("\n\n");
-
-        if( pedir_bool("INICIAR ANIMOS") )
-            animos(viento , humedad , animo_legolas , animo_gimli);
-    }
 // JUEGO (¡)
 
+// ETIQUETAS
+
+    // Implementacion de funciones para cargar componentes de la configuracion
+        void cargar_configuracion
+            ( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
+
+            cargar_config( configuracion, lectura );
+        }
+        void cargar_grabar
+            ( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
+
+            strcpy(configuracion->grabacion, lectura);
+        }
+    // Implementacion de funciones para cargar componentes de la configuracion
+
+// ETIQUETAS
