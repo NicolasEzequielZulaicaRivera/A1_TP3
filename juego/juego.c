@@ -356,6 +356,12 @@ void jugar( int argc , char *argv [] ){
         caracteristicas_nivel->costo_enanos_extra[1] = configuracion.enanos_extra[2];
         caracteristicas_nivel->costo_elfos_extra[0] = configuracion.elfos_extra[1];
         caracteristicas_nivel->costo_elfos_extra[1] = configuracion.elfos_extra[2];
+
+        caracteristicas_nivel->enanos = 
+            configuracion.enanos_inicio[ caracteristicas_nivel->num -1 ];
+
+        caracteristicas_nivel->elfos = 
+            configuracion.elfos_inicio[ caracteristicas_nivel->num -1 ];
     }
 
     void pasar_turno( juego_t* juego , configuracion_t configuracion, 
@@ -665,27 +671,46 @@ void jugar( int argc , char *argv [] ){
         
         // ENANOS
         i=0;
-        while( i<caracteristicas_nivel.enanos ){
-
-            do{
-                aux = juego->nivel.camino_1[ rand()%(juego->nivel.tope_camino_1-2)+2 ];
-                posicion.fil = aux.fil-1+rand()%3;
-                posicion.col = aux.col-1+rand()%3;
-            } while ( agregar_defensor( &(juego->nivel), posicion, ENANO) == INVALIDO );
-            i++;
+        if( juego->nivel.tope_camino_1 > 0 ){
+            while( i<caracteristicas_nivel.enanos ){
+                do{
+                    aux = juego->nivel.camino_1[ rand()%(juego->nivel.tope_camino_1-2)+2 ];
+                    posicion.fil = aux.fil-1+rand()%3;
+                    posicion.col = aux.col-1+rand()%3;
+                } while ( agregar_defensor( &(juego->nivel), posicion, ENANO) == INVALIDO );
+                i++;
+            }
+        }else{
+            while( i<caracteristicas_nivel.enanos ){
+                do{
+                    posicion.fil = rand()% caracteristicas_nivel.dimension ;
+                    posicion.col = rand()% caracteristicas_nivel.dimension ;
+                } while ( agregar_defensor( &(juego->nivel), posicion, ENANO) == INVALIDO );
+                i++;
+            }
         }
 
         // ELFOS
         i=0;
-        while( i<caracteristicas_nivel.elfos){
-            do{
-                aux = juego->nivel.camino_2[ rand()%(juego->nivel.tope_camino_2-2) ];
-                posicion.fil = aux.fil-1+rand()%3;
-                posicion.col = aux.col-1+rand()%3;
-            } while ( agregar_defensor( &(juego->nivel), posicion, ELFO) == INVALIDO );
-            i++;
-            mostrar_juego(*juego);
-        }    
+        if( juego->nivel.tope_camino_2 > 0 ){
+            while( i<caracteristicas_nivel.elfos ){
+                do{
+                    aux = juego->nivel.camino_2[ rand()%(juego->nivel.tope_camino_2-2) ];
+                    posicion.fil = aux.fil-1+rand()%3;
+                    posicion.col = aux.col-1+rand()%3;
+                } while ( agregar_defensor( &(juego->nivel), posicion, ELFO) == INVALIDO );
+                i++;
+                mostrar_juego(*juego);
+            }  
+        }else{
+            while( i<caracteristicas_nivel.elfos ){
+                do{
+                    posicion.fil = rand()% caracteristicas_nivel.dimension ;
+                    posicion.col = rand()% caracteristicas_nivel.dimension ;
+                } while ( agregar_defensor( &(juego->nivel), posicion, ELFO) == INVALIDO );
+                i++;
+            }
+        } 
     }
 
     void agregar_defensores_bonus( juego_t* juego, caracteristicas_nivel_t caracteristicas_nivel  ){

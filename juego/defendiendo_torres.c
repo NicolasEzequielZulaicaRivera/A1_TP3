@@ -182,11 +182,11 @@
 		juego->torres.costo_elfos_extra[0] = configuracion.elfos_extra[1];
 		juego->torres.costo_elfos_extra[1] = configuracion.elfos_extra[2];
 	
-		juego->critico_gimli =  configuracion.enanos_animo[0];
-		juego->fallo_gimli = configuracion.enanos_animo[1];
+		juego->fallo_gimli = configuracion.enanos_animo[0];
+		juego->critico_gimli =  configuracion.enanos_animo[1];
 
-		juego->critico_legolas = configuracion.elfos_animo[0];
-		juego->fallo_legolas = configuracion.elfos_animo[1];
+		juego->fallo_legolas = configuracion.elfos_animo[0];
+		juego->critico_legolas = configuracion.elfos_animo[1];
 	
 		
 

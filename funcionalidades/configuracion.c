@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include  "../constantes.h"
 #include  "configuracion.h"
 #include  "../utiles/pedir_datos.h"
@@ -14,13 +15,13 @@
     
 	const configuracion_t CONFIGURACION_STANDAR ={
 
-        .resistencia_torres = {6000,6000},
-        .enanos_inicio = {5-3,0,3,4},
-		.elfos_inicio = {0+3,5,3,4},
+        .resistencia_torres = {600,600},
+        .enanos_inicio = {5,0,3,4},
+		.elfos_inicio = {0,5,3,4},
 		.enanos_extra = {10,50,0},
 		.elfos_extra = {10,0,50},
-		.enanos_animo = {50,50},
-		.elfos_animo = {50,50},
+		.enanos_animo = {10,50},
+		.elfos_animo = {10,50},
         .velocidad = 0.3f,
         .caminos = "_caminos.txt",
 
@@ -151,19 +152,24 @@
 	// Subrutina que guarda una configuracion en cierta ruta
 	void guardar_config( configuracion_t configuracion, nombre_archivo_t ruta );
 
-	// Guarda una configuracion segun datos ingresados por el usuario
+	
 	void crear_config( nombre_archivo_t nombre_archivo ){
-
-		configuracion_t configuracion = CONFIGURACION_STANDAR;
-		pedir_config( &configuracion);
-
 
 		nombre_archivo_t ruta;
 		strcpy(ruta, RUTA_CONFIGURACIONES);
 		strcat(ruta, nombre_archivo);
 
+		if( access( ruta, F_OK ) != INVALIDO ){
+			printf("\nYa existe la configuracion\n");
+			return;
+		}
+
+		configuracion_t configuracion = CONFIGURACION_STANDAR;
+		pedir_config( &configuracion);
+
 		guardar_config( configuracion, ruta );
 
+		printf("\nConfiguracion guardada correctamente\n");
 	}
 
 	void pedir_config(configuracion_t* configuracion){
@@ -372,7 +378,7 @@
 
 		if( !archivo ){
 
-			printf(" No existe el archivo de configuracion \n");
+			printf("\nNo existe el archivo de configuracion\n");
 			return;
 		} 
 
@@ -400,7 +406,8 @@
 	   		do{
 		   		sscanf( lectura, "%i%s", &aux, lectura_aux );
 
-		   		*puntero_vector=aux;
+		   		if( aux != INVALIDO )
+		   			*puntero_vector = aux;
 		   		puntero_vector++;
 
 		   		lectura=strchr(lectura,SEPARADOR);
@@ -447,31 +454,18 @@
 	   	void cargar_velocidad
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		sscanf( lectura, "%f", 
-	   			&(configuracion->velocidad)
-	   		);
+	   		float aux;
+
+	   		sscanf( lectura, "%f", &aux);
+
+	   		if( (int)aux != INVALIDO )
+	   			configuracion->velocidad = aux;
 	   	}
 	   	void cargar_caminos
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		strcpy( configuracion->caminos, lectura);
+	   		if( strcmp(lectura,STRING_INVALIDO) )
+	   			strcpy( configuracion->caminos, lectura);
 	   	}
    	// Implementacion de funciones para cargar componentes de la configuracion
 // ETIQUETAS
-
-// PRUEBAS
-
-void prueba(){
-
-	configuracion_t conf;
-
-	cargar_config( &conf, "d.d" );
-
-	nombre_archivo_t ruta;
-	strcpy(ruta, RUTA_CONFIGURACIONES);
-	strcat(ruta, "r.r");
-
-	guardar_config( conf, ruta );
-
-}
-// PRUEBAS

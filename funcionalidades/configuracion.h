@@ -69,6 +69,4 @@
     void cargar_config( configuracion_t* configuracion, 
         nombre_archivo_t nombre_archivo );
 
-    void prueba();
-
 #endif
