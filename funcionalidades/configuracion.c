@@ -79,31 +79,81 @@
    	// Declaracion de funciones para cargar componentes de la configuracion
 	   	void cargar_resistencia_torres
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//1
-	   	void enanos_inicio
+	   	void cargar_enanos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//2
-	   	void elfos_inicio
+	   	void cargar_elfos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//3
-	   	void enanos_extra
+	   	void cargar_enanos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//4
-	   	void elfos_extra
+	   	void cargar_elfos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//5
-	   	void enanos_animo
+	   	void cargar_enanos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//6
-	   	void elfos_animo
+	   	void cargar_elfos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//7
-	   	void velocidad
+	   	void cargar_velocidad
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//8
-	   	void caminos
+	   	void cargar_caminos
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//9
    	// Declaracion de funciones para cargar componentes de la configuracion
 
-	const etiqueta_de_configuracion_t ETIQUETAS [1] = {
+	const etiqueta_de_configuracion_t ETIQUETAS [CANTIDAD_ETIQUETAS] = {
+		{
+			.indice = 0,
+			.etiqueta = "RESISTENCIA_TORRES",
+			.cargar = cargar_resistencia_torres
+		},
 		{
 			.indice = 1,
-			.etiqueta = "RESISTENCIA_TORRES",
-			.cargar = &cargar_resistencia_torres
-		}
+			.etiqueta = "ENANOS_INICIO",
+			.cargar = cargar_enanos_inicio
+		},
+		{
+			.indice = 2,
+			.etiqueta = "ELFOS_INICIO",
+			.cargar = cargar_elfos_inicio
+		},
+		{
+			.indice = 3,
+			.etiqueta = "ENANOS_EXTRA",
+			.cargar = cargar_enanos_extra
+		},
+		{
+			.indice = 4,
+			.etiqueta = "ELFOS_EXTRA",
+			.cargar = cargar_elfos_extra
+		},
+		{
+			.indice = 5,
+			.etiqueta = "ENANOS_ANIMO",
+			.cargar = cargar_enanos_animo
+		},
+		{
+			.indice = 6,
+			.etiqueta = "ELFOS_ANIMO",
+			.cargar = cargar_elfos_animo
+		},
+		{
+			.indice = 7,
+			.etiqueta = "VELOCIDAD",
+			.cargar = cargar_velocidad
+		},
+		{
+			.indice = 8,
+			.etiqueta = "CAMINOS",
+			.cargar = cargar_caminos
+		},
 	};
+
+	const etiqueta_de_configuracion_t ETIQUETA_INVALIDA = {
+		.indice = INVALIDO,
+		.etiqueta = STRING_INVALIDO,
+		.cargar = NULL
+	};
+
+	// Devuelve una etiqueta (obj) segun su etiqueta (string)
+	// Buscara las etiquetas en la constante ETIQUETAS
+	etiqueta_de_configuracion_t buscar_etiqueta( char etiqueta [MAX_NOMBRE] );
 
 // ETIQUETAS
 
@@ -266,36 +316,37 @@
 	void guardar_config( configuracion_t configuracion, nombre_archivo_t ruta ){
 
 		FILE* archivo = fopen(ruta,"w");
+		int i = 0;
 
-		fprintf(archivo,"RESISTENCIA_TORRES=%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i\n", ETIQUETAS[ i++].etiqueta,
 			configuracion.resistencia_torres[0], configuracion.resistencia_torres[1] );
 
-		fprintf(archivo,"ENANOS_INICIO=%i,%i,%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i,%i,%i\n", ETIQUETAS[ i++ ].etiqueta,
 			configuracion.enanos_inicio[0], configuracion.enanos_inicio[1],
 			configuracion.enanos_inicio[2], configuracion.enanos_inicio[3] );
 
-		fprintf(archivo,"ELFOS_INICIO=%i,%i,%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i,%i,%i\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.elfos_inicio[0], configuracion.elfos_inicio[1],
 			configuracion.elfos_inicio[2], configuracion.elfos_inicio[3] );
 
-		fprintf(archivo,"ENANOS_EXTRA=%i,%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i,%i\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.enanos_extra[0], configuracion.enanos_extra[1],
 			configuracion.enanos_extra[2] );
 
-		fprintf(archivo,"ELFOS_EXTRA=%i,%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i,%i\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.elfos_extra[0], configuracion.elfos_extra[1],
 			configuracion.elfos_extra[2] );
 
-		fprintf(archivo,"ENANOS_ANIMO=%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.enanos_animo[0], configuracion.enanos_animo[1]);
 
-		fprintf(archivo,"ELFOS_ANIMO=%i,%i\n", 
+		fprintf(archivo,"%s=%i,%i\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.enanos_animo[0], configuracion.enanos_animo[1]);
 
-		fprintf(archivo,"VELOCIDAD=%f\n", 
+		fprintf(archivo,"%s=%f\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.velocidad );
 
-		fprintf(archivo,"CAMINOS=%s\n", 
+		fprintf(archivo,"%s=%s\n", ETIQUETAS[ i++ ].etiqueta, 
 			configuracion.caminos );
 
 		fclose(archivo);
@@ -304,23 +355,70 @@
 
 // LEER CONFIG
 
-	// Cargara una configuracion de un archivo
+	// Subrutina de cargar_config
+	// cargara los datos de un archivo de configuracion en una configuracion sin verificar
+	// pre: ruta correcta
+    void cargar_config_archivo( configuracion_t* configuracion, 
+        nombre_archivo_t ruta );
+
     void cargar_config( configuracion_t* configuracion, 
-        nombre_archivo_t nombre_archivo );
+        nombre_archivo_t nombre_archivo ){
+
+		*configuracion = CONFIGURACION_STANDAR;
+
+		nombre_archivo_t ruta;
+		strcpy(ruta, RUTA_CONFIGURACIONES);
+		strcat(ruta, nombre_archivo);
+
+		cargar_config_archivo( configuracion, ruta );  	
+    }
+
+    void cargar_config_archivo( configuracion_t* configuracion, 
+        nombre_archivo_t ruta ){
+
+    	char etiqueta [MAX_NOMBRE], lectura [MAX_NOMBRE] ;
+    	etiqueta_de_configuracion_t etiqueta_de_configuracion;
+
+    	FILE* archivo = fopen( ruta, "r" );
+
+    	printf("\n\n");
+
+    	while( 
+    		fscanf( archivo, "%[^=]=%[^\n]\n", etiqueta, lectura  ) != EOF 
+    	){
+
+	    	etiqueta_de_configuracion = buscar_etiqueta( etiqueta );
+
+	    	etiqueta_de_configuracion.cargar(configuracion,lectura);
+    	}
+
+    	fclose( archivo );
+    }
 // LEER CONFIG
 
 // ETIQUETAS
+
+    etiqueta_de_configuracion_t buscar_etiqueta( char etiqueta [MAX_NOMBRE] ){
+
+    	for( int i = 0; i < CANTIDAD_ETIQUETAS; i++ ){
+
+    		if( strcmp( etiqueta, ETIQUETAS[i].etiqueta )==0 )
+    			return ETIQUETAS[i];
+    	}
+
+    	return ETIQUETA_INVALIDA;
+    }
 
     // Implementacion de funciones para cargar componentes de la configuracion
 	   	void cargar_resistencia_torres
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		sscanf( lectura, "%i;%i", 
-	   			&(configuracion->resistencia_torres[0]),
-	   			&(configuracion->resistencia_torres[1])
+	   			&configuracion->resistencia_torres[ 0 ],
+	   			&configuracion->resistencia_torres[ 1 ]
 	   		);
 	   	}
-	   	void enanos_inicio
+	   	void cargar_enanos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		// DEPENDE DE CANTIDAD DE NIVELES 
@@ -331,7 +429,7 @@
 	   			&(configuracion->enanos_inicio[3])
 	   		);
 	   	}
-	   	void elfos_inicio
+	   	void cargar_elfos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		// DEPENDE DE CANTIDAD DE NIVELES 
@@ -342,7 +440,7 @@
 	   			&(configuracion->elfos_inicio[3])
 	   		);
 	   	}
-	   	void enanos_extra
+	   	void cargar_enanos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		sscanf( lectura, "%i;%i;%i",
@@ -351,7 +449,7 @@
 	   			&(configuracion->enanos_extra[2])
 	   		);
 	   	}
-	   	void elfos_extra
+	   	void cargar_elfos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		sscanf( lectura, "%i;%i;%i",
@@ -360,7 +458,7 @@
 	   			&(configuracion->elfos_extra[2])
 	   		);
 	   	}
-	   	void enanos_animo
+	   	void cargar_enanos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		sscanf( lectura, "%i;%i", 
@@ -368,7 +466,7 @@
 	   			&(configuracion->enanos_animo[1])
 	   		);
 	   	}
-	   	void elfos_animo
+	   	void cargar_elfos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		sscanf( lectura, "%i;%i", 
@@ -376,14 +474,14 @@
 	   			&(configuracion->elfos_animo[1])
 	   		);
 	   	}
-	   	void velocidad
+	   	void cargar_velocidad
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		sscanf( lectura, "%f", 
 	   			&(configuracion->velocidad)
 	   		);
 	   	}
-	   	void caminos
+	   	void cargar_caminos
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
 	   		strcpy( configuracion->caminos, lectura);
@@ -395,18 +493,15 @@
 
 void prueba(){
 
-	etiqueta_de_configuracion_t et = ETIQUETAS [0];
+	configuracion_t conf;
 
-	printf("%i, %s\n", et.indice, et.etiqueta );
+	cargar_config( &conf, "d.d" );
 
-	configuracion_t conf = CONFIGURACION_STANDAR;
+	nombre_archivo_t ruta;
+	strcpy(ruta, RUTA_CONFIGURACIONES);
+	strcat(ruta, "r.r");
 
-	et.cargar( &conf, "2;2" );
-
-	printf(
-		"\n----\n %i;%i \n----\n",
-		conf.resistencia_torres[0],conf.resistencia_torres[1]
-	);
+	guardar_config( conf, ruta );
 
 }
 // PRUEBAS
