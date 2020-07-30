@@ -8,6 +8,8 @@
 // CONSTANTES
 
 	const nombre_archivo_t RUTA_CONFIGURACIONES = "configuraciones/";
+
+	const char SEPARADOR = ',';
     
 	const configuracion_t CONFIGURACION_STANDAR ={
 
@@ -410,69 +412,56 @@
     }
 
     // Implementacion de funciones para cargar componentes de la configuracion
+	   	void cargar_enteros( int* puntero, char lectura [MAX_NOMBRE] ){
+
+	   		int aux;
+	   		char lectura_aux [MAX_NOMBRE];
+	   		do{
+		   		sscanf( lectura, "%i%s", &aux, lectura_aux );
+
+		   		*puntero=aux;
+		   		puntero++;
+
+		   		lectura=strchr(lectura,SEPARADOR);
+		   		if( lectura )lectura ++;
+	   		}while(lectura);
+
+	   	}
+
 	   	void cargar_resistencia_torres
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		sscanf( lectura, "%i;%i", 
-	   			&configuracion->resistencia_torres[ 0 ],
-	   			&configuracion->resistencia_torres[ 1 ]
-	   		);
+	   		cargar_enteros( configuracion->resistencia_torres, lectura );
 	   	}
 	   	void cargar_enanos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		// DEPENDE DE CANTIDAD DE NIVELES 
-	   		sscanf( lectura, "%i;%i;%i;%i",
-	   			&(configuracion->enanos_inicio[0]),
-	   			&(configuracion->enanos_inicio[1]),
-	   			&(configuracion->enanos_inicio[2]),
-	   			&(configuracion->enanos_inicio[3])
-	   		);
+	   		cargar_enteros( configuracion->enanos_inicio, lectura );
 	   	}
 	   	void cargar_elfos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		// DEPENDE DE CANTIDAD DE NIVELES 
-	   		sscanf( lectura, "%i;%i;%i;%i",
-	   			&(configuracion->elfos_inicio[0]),
-	   			&(configuracion->elfos_inicio[1]),
-	   			&(configuracion->elfos_inicio[2]),
-	   			&(configuracion->elfos_inicio[3])
-	   		);
+	   		cargar_enteros( configuracion->elfos_inicio, lectura );
 	   	}
 	   	void cargar_enanos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		sscanf( lectura, "%i;%i;%i",
-	   			&(configuracion->enanos_extra[0]),
-	   			&(configuracion->enanos_extra[1]),
-	   			&(configuracion->enanos_extra[2])
-	   		);
+	   		cargar_enteros( configuracion->enanos_extra, lectura );
 	   	}
 	   	void cargar_elfos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		sscanf( lectura, "%i;%i;%i",
-	   			&(configuracion->elfos_extra[0]),
-	   			&(configuracion->elfos_extra[1]),
-	   			&(configuracion->elfos_extra[2])
-	   		);
+	   		cargar_enteros( configuracion->elfos_extra, lectura );
 	   	}
 	   	void cargar_enanos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		sscanf( lectura, "%i;%i", 
-	   			&(configuracion->enanos_animo[0]),
-	   			&(configuracion->enanos_animo[1])
-	   		);
+	   		cargar_enteros( configuracion->enanos_animo, lectura );
 	   	}
 	   	void cargar_elfos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
-	   		sscanf( lectura, "%i;%i", 
-	   			&(configuracion->elfos_animo[0]),
-	   			&(configuracion->elfos_animo[1])
-	   		);
+	   		cargar_enteros( configuracion->elfos_animo, lectura );
 	   	}
 	   	void cargar_velocidad
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
