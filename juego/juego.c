@@ -265,6 +265,8 @@ static void jugar_juego( configuracion_t configuracion ){
         configuracion.elfos_animo[1] = prob_critico(animo_legolas);
     }
 
+    configuracion.auto_defensores = !pedir_bool( " Desea colocar los defensores manualmente ? " );
+
     inicializar_juego(&juego, configuracion);
     nuevo_juego( &juego , configuracion );
 

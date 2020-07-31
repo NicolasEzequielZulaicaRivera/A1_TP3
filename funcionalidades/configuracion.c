@@ -29,7 +29,7 @@
 
         .bonus_resistencia = 0,
         .saltear_niveles = false, .invencible = false,
-        .auto_defensores = true,
+        .auto_defensores = false,
         .complejidad = 2, .rareza_cruzado = 2
     };
 
