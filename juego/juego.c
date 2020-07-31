@@ -282,10 +282,6 @@ static void jugar_juego( configuracion_t configuracion ){
     inicializar_juego(&juego, configuracion);
     nuevo_juego( &juego , configuracion );
 
-    system("clear");
-    printf("\n\n%i\n\n", puntaje( juego , configuracion ) );
-    tocar_para_continuar();
-
     return;
 }
 
@@ -345,6 +341,8 @@ void jugar( int argc , char *argv [] ){
         }
 
         mensaje_terminar_juego( estado_juego( *juego) );
+
+        guardar_puntaje( puntaje( *juego , configuracion ) ,configuracion);
     }
 
     void pasar_de_nivel( juego_t* juego , configuracion_t configuracion, 
@@ -942,7 +940,7 @@ void jugar( int argc , char *argv [] ){
         return caracteristicas_nivel;
     }
 
-    static int puntaje( juego_t juego, configuracion_t configuracion ){
+    int puntaje( juego_t juego, configuracion_t configuracion ){
 
         return MULTIPLICADOR_PUNTAJE * juego.orcos_muertos /
         (

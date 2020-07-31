@@ -339,8 +339,7 @@
 
 		return 0;
 	}
-
-
+	
 	void inicializar_caminos( caminos_t* caminos ){
 
 		for( int i=0 ; i<CANTIDAD_NIVELES ; i++ )
