@@ -4,17 +4,24 @@
 #include <time.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include "../constantes.h"
+#include "defendiendo_torres.h"
+
+#include "../utiles/pedir_datos.h" 
+#include "../utiles/etiquetas.h"
+#include "../utiles/utiles.h"
+
 #include "../funcionalidades/configuracion.h"
 #include "../funcionalidades/caminos.h"
-#include "../utiles/pedir_datos.h" 
+#include "../funcionalidades/ranking.h"
 #include "../funcionalidades/animos.h"
-#include "defendiendo_torres.h"
-#include "../utiles/utiles.h"
-#include "../utiles/etiquetas.h"
+
 
 //  CONSTANTES DE JUEGO (!)
     static const char NADIE = 'N';
+
+    static const int MULTIPLICADOR_PUNTAJE = 1000;
 
     static const int ESTADO_JUGANDO = 0;
     static const int ESTADO_GANADO  = 1;
@@ -245,6 +252,9 @@
     // aplica al juego los bonus que corresponden posterior a jugar un turno
     static void bonus_post_turno( juego_t* juego , configuracion_t configuracion, 
         caracteristicas_nivel_t caracteristicas_nivel, int turno  );
+
+    // devuelve el puntaje del juego segun la configuracion
+    static int puntaje( juego_t juego, configuracion_t configuracion );
 // HEADER JUEGO (¡)
 
 // jugar juego segun la configuracion
@@ -271,6 +281,10 @@ static void jugar_juego( configuracion_t configuracion ){
 
     inicializar_juego(&juego, configuracion);
     nuevo_juego( &juego , configuracion );
+
+    system("clear");
+    printf("\n\n%i\n\n", puntaje( juego , configuracion ) );
+    tocar_para_continuar();
 
     return;
 }
@@ -583,8 +597,7 @@ void jugar( int argc , char *argv [] ){
                 torre->col = rand()%(dimension/2);
             break;
         }
-    }
-     
+    }  
     void generar_camino_2( nivel_t* nivel, 
         caracteristicas_nivel_t caracteristicas_nivel , configuracion_t configuracion, bool cruzado ){
          
@@ -906,11 +919,10 @@ void jugar( int argc , char *argv [] ){
         
         if( tipo == ELFO )
             for( i=0; i<CANTIDAD_TORRES; i++)
-                dano[i] += caracteristicas_nivel.costo_enanos_extra[i];
+                dano[i] += caracteristicas_nivel.costo_elfos_extra[i];
 
         juego->torres.resistencia_torre_1 -= dano[0];
         juego->torres.resistencia_torre_2 -= dano[1];
-
     }
 
     caracteristicas_nivel_t buscar_caracteristicas_nivel( int nivel ){
@@ -929,6 +941,26 @@ void jugar( int argc , char *argv [] ){
 
         return caracteristicas_nivel;
     }
+
+    static int puntaje( juego_t juego, configuracion_t configuracion ){
+
+        return MULTIPLICADOR_PUNTAJE * juego.orcos_muertos /
+        (
+            1 + 
+            configuracion.resistencia_torres[0] +
+            configuracion.resistencia_torres[1] +
+            configuracion.enanos_inicio[0] +
+            configuracion.enanos_inicio[1] +
+            configuracion.enanos_inicio[2] +
+            configuracion.enanos_inicio[3] +
+            configuracion.elfos_inicio[0] +
+            configuracion.elfos_inicio[1] +
+            configuracion.elfos_inicio[2] +
+            configuracion.elfos_inicio[3] +
+            configuracion.enanos_extra[0] +
+            configuracion.elfos_extra[0]
+        ) ;
+    }
 // JUEGO (¡)
 
 // ETIQUETAS
@@ -938,6 +970,8 @@ void jugar( int argc , char *argv [] ){
             ( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
 
             cargar_config( configuracion, lectura );
+
+            strcpy(configuracion->ranking, lectura);
         }
         void cargar_grabar
             ( configuracion_t* configuracion, char lectura [MAX_NOMBRE] ){
@@ -946,31 +980,3 @@ void jugar( int argc , char *argv [] ){
         }
     // Implementacion de funciones para cargar componentes de la configuracion
 // ETIQUETAS
-
-void prueba(){
-
-    caminos_t caminos;
-    int i;
-    int nivel = 3;
-
-    obtener_caminos( &caminos, "_caminos.txt");
-
-    juego_t juego;
-
-    juego.nivel.tope_camino_1 = caminos.topes[nivel][0];
-
-    for( i=0; i < caminos.topes[nivel][0]; i++ ){
-        juego.nivel.camino_1[i].fil = caminos.caminos[nivel][0][i].fil;
-        juego.nivel.camino_1[i].col = caminos.caminos[nivel][0][i].col;
-    }
-
-    juego.nivel.tope_camino_2 = caminos.topes[nivel][1] ;
-    for( i=0; i < caminos.topes[nivel][1]; i++ ){
-        juego.nivel.camino_2[i].fil = caminos.caminos[nivel][1][i].fil;
-        juego.nivel.camino_2[i].col = caminos.caminos[nivel][1][i].col;
-    }
-
-
-    mostrar_juego( juego );
-
-}

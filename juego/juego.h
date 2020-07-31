@@ -4,6 +4,4 @@
 // Jugar juego segun los argumentos del comando
 void jugar( int argc , char *argv [] );
 
-void prueba();
-
 #endif

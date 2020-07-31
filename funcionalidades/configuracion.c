@@ -25,7 +25,8 @@
         .velocidad = 0.1f,
         .caminos = "_caminos.txt",
         
-        .ranking = "_ranking",
+        .ranking = "ranking.csv",
+        .listar = INVALIDO,
 
         .grabacion = "",
 
@@ -366,10 +367,9 @@
 
 		// Correcciones 
 		strcpy(configuracion->grabacion, aux.grabacion);	
+		strcpy(configuracion->ranking, aux.ranking);	
 		configuracion->auto_defensores = aux.auto_defensores;
-
-		// Otros	
-		strcpy( configuracion->ranking , nombre_archivo );
+		configuracion->listar = aux.listar;
     }
 
     void cargar_config_archivo( configuracion_t* configuracion, 

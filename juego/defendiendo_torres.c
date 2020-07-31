@@ -187,8 +187,8 @@
 
 		juego->fallo_legolas = configuracion.elfos_animo[0];
 		juego->critico_legolas = configuracion.elfos_animo[1];
-	
-		
+
+		juego->orcos_muertos = 0;	
 
 		//NIVEL
 		juego->nivel.tope_camino_1 = 0;
@@ -401,12 +401,14 @@
 					if( rand()%100 < probabilidad_critico  )
 								dano = dano_critico;
 					juego->nivel.enemigos[m].vida -= dano;
+
+					if( juego->nivel.enemigos[m].vida <= 0 )
+						juego->orcos_muertos ++;
 				}
 				if(tipo == ENANO)
 					atacar = false;// return;
 			}
 		}
-
 	}
 
 	bool en_rango_enano( coordenada_t pos, coordenada_t enemigo ){

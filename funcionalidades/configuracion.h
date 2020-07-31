@@ -41,6 +41,8 @@
 
             // archivo que guarda el puntaje del juego
             nombre_archivo_t ranking;
+            // cantidad de jugadores a listar en un ranking
+            int listar;
 
         // --- FUNCIONALIDADES ---
 

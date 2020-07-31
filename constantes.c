@@ -1,6 +1,8 @@
 #include "constantes.h"
 	
 	const bool SOBREESCRIBIR = true;
+
+	const nombre_archivo_t ARCHIVO_TEMPORAL = "_temp";
 	
 //----- CONSTANTES COMUNES ----- (!)
 	const char ANIMO_BUENO   = 'B';

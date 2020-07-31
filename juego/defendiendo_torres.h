@@ -63,6 +63,7 @@
 		int critico_gimli;
 		int fallo_legolas;
 		int fallo_gimli;
+		int orcos_muertos;
 	} juego_t;
 
 	/*

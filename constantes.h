@@ -13,7 +13,10 @@
 	const bool SOBREESCRIBIR;
 
 	typedef char opcion_t[MAX_NOMBRE];
+	typedef char nombre_t[MAX_NOMBRE];
 	typedef char nombre_archivo_t[MAX_ARCHIVO];
+
+	const nombre_archivo_t ARCHIVO_TEMPORAL;
 
 	//----- CONSTANTES COMUNES ----- (!)
 		const char ANIMO_BUENO   ;
