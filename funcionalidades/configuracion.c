@@ -11,7 +11,7 @@
 
 	const nombre_archivo_t RUTA_CONFIGURACIONES = "configuraciones/";
 
-	const char SEPARADOR = ',';
+	static const char SEPARADOR = ',';
     
 	const configuracion_t CONFIGURACION_STANDAR ={
 
@@ -22,11 +22,14 @@
 		.elfos_extra = {10,0,50},
 		.enanos_animo = {10,50},
 		.elfos_animo = {10,50},
-        .velocidad = 0.3f,
+        .velocidad = 0.1f,
         .caminos = "_caminos.txt",
+        
+        .ranking = "_ranking",
 
         .grabacion = "",
 
+        .caminos_random = false,
         .bonus_resistencia = 0,
         .saltear_niveles = false, .invencible = false,
         .auto_defensores = false,
@@ -136,7 +139,6 @@
 			.cargar = cargar_caminos
 		},
 	};
-
 // ETIQUETAS
 
 // CREAR CONFIG
@@ -159,7 +161,7 @@
 		strcpy(ruta, RUTA_CONFIGURACIONES);
 		strcat(ruta, nombre_archivo);
 
-		if( access( ruta, F_OK ) != INVALIDO ){
+		if( !SOBREESCRIBIR && access( ruta, F_OK ) != INVALIDO ){
 			printf("\nYa existe la configuracion\n");
 			return;
 		}
@@ -364,7 +366,10 @@
 
 		// Correcciones 
 		strcpy(configuracion->grabacion, aux.grabacion);	
-		configuracion->auto_defensores = aux.auto_defensores;	
+		configuracion->auto_defensores = aux.auto_defensores;
+
+		// Otros	
+		strcpy( configuracion->ranking , nombre_archivo );
     }
 
     void cargar_config_archivo( configuracion_t* configuracion, 
@@ -378,7 +383,8 @@
 
 		if( !archivo ){
 
-			printf("\nNo existe el archivo de configuracion\n");
+			printf("\nNo existe el archivo de configuracion\nSe utilizara la configuracion standar\n");
+			tocar_para_continuar();
 			return;
 		} 
 

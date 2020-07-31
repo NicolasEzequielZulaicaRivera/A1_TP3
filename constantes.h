@@ -9,6 +9,8 @@
 	#define CANTIDAD_TORRES  2
 	#define INVALIDO -1
 	#define STRING_INVALIDO "-1"
+	
+	const bool SOBREESCRIBIR;
 
 	typedef char opcion_t[MAX_NOMBRE];
 	typedef char nombre_archivo_t[MAX_ARCHIVO];

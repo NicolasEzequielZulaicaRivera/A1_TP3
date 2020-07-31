@@ -19,4 +19,8 @@
 	// Le permitirá al jugador crear los caminos de un juego para utilizar luego.
 	void crear_caminos( nombre_archivo_t nombre_archivo );
 
+	// Obtendra los caminos de un archivo
+	int obtener_caminos( caminos_t* caminos, 
+        nombre_archivo_t nombre_archivo );
+
 #endif

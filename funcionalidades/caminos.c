@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include  "../constantes.h"
 #include  "caminos.h"
 #include  "../utiles/pedir_datos.h"
 #include  "../juego/defendiendo_torres.h"
 
 // CONSTANTES
+
+	static const char FORMATO [MAX_NOMBRE] = "%i;%i\n";
 
 	const nombre_archivo_t RUTA_CAMINOS = "caminos/";
 
@@ -33,7 +36,6 @@
 	};
 
 	enum movimiento { ARRIBA ='W', IZQUIERDA ='A' , ABAJO = 'S', DERECHA ='D' };
-
 // CONSTANTES
 
 // CREAR CAMINOS
@@ -75,13 +77,18 @@
 	
 	void crear_caminos( nombre_archivo_t nombre_archivo ){
 
-		caminos_t caminos;
-
-		pedir_caminos( &caminos );
-
 		nombre_archivo_t ruta;
 		strcpy(ruta, RUTA_CAMINOS);
 		strcat(ruta, nombre_archivo);
+
+		if( !SOBREESCRIBIR && access( ruta, F_OK ) != INVALIDO ){
+			printf("\nYa existe el camino\n");
+			return;
+		}
+
+		caminos_t caminos;
+
+		pedir_caminos( &caminos );
 
 		guardar_caminos( &caminos, ruta );
 	}
@@ -241,13 +248,6 @@
 				if( caminos->topes[i][j] > 2 ){
 					fprintf(archivo,"CAMINO=%i\n",j+1);
 
-					/*
-					for( int k=0; k < caminos->topes[i][j]; k++ )
-						fprintf(archivo,"%i;%i\n",
-							caminos->caminos[i][j][k].fil,
-							caminos->caminos[i][j][k].col
-						);
-					*/
 					guardar_camino(
 						caminos->caminos[i][j], 
 						caminos->topes[i][j], 
@@ -264,7 +264,7 @@
 
 		for( int i=0; i<tope; i++ )
 			fprintf(
-				archivo,"%i;%i\n",
+				archivo,FORMATO,
 				camino[i].fil,
 				camino[i].col
 			);
@@ -288,5 +288,63 @@
 
 		return max+1;
 	}
-
 // CREAR CAMINOS
+
+// LEER CAMINOS
+
+	void inicializar_caminos( caminos_t* caminos );
+
+	int obtener_caminos( caminos_t* caminos, 
+        nombre_archivo_t nombre_archivo ){
+
+		nombre_archivo_t ruta;
+		strcpy(ruta, RUTA_CAMINOS);
+		strcat(ruta, nombre_archivo);
+
+		FILE* archivo = fopen( ruta, "r" );
+
+		if( !archivo ){
+			printf("\n No existen los caminos %s \n", nombre_archivo);
+			return INVALIDO;
+		}
+
+		inicializar_caminos( caminos );
+
+		int nivel = INVALIDO, camino = INVALIDO;
+		int fila = INVALIDO, columna = INVALIDO, tope = INVALIDO;
+
+		int hay_nivel = false, hay_camino = false, hay_coord = false;
+
+		while( !feof(archivo) ){
+
+			hay_nivel = fscanf( archivo, "NIVEL=%i\n", &nivel );
+			hay_camino= fscanf( archivo, "CAMINO=%i\n", &camino );
+			hay_coord = fscanf( archivo, FORMATO, &fila , &columna );
+
+			if( hay_nivel ){
+				//printf( "NIVEL=%i\n", nivel );
+			}
+			if( hay_camino ){
+				//printf( "CAMINO=%i\n", camino );
+			}
+			if( hay_coord ){
+				//printf( FORMATO, fila , columna );
+				tope = caminos->topes[nivel-1][camino-1] ++;
+				caminos->caminos[nivel-1][camino-1][tope].fil = fila;
+				caminos->caminos[nivel-1][camino-1][tope].col = columna;
+			}
+		}
+
+		fclose( archivo );
+
+		return 0;
+	}
+
+
+	void inicializar_caminos( caminos_t* caminos ){
+
+		for( int i=0 ; i<CANTIDAD_NIVELES ; i++ )
+			for( int j=0 ; j<CANTIDAD_TORRES ; j++ )
+				caminos->topes[i][j] = 0;
+	}
+// LEER CAMINOS

@@ -1,5 +1,7 @@
 #include "constantes.h"
 	
+	const bool SOBREESCRIBIR = true;
+	
 //----- CONSTANTES COMUNES ----- (!)
 	const char ANIMO_BUENO   = 'B';
 	const char ANIMO_REGULAR = 'R';

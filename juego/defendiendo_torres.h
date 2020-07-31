@@ -51,6 +51,8 @@
 		int tope_enemigos;
 
 		int max_enemigos_nivel;
+		
+		int numero;
 	} nivel_t;
 
 	typedef struct juego {

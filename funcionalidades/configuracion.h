@@ -11,33 +11,44 @@
      */
     typedef struct configuracion {
 
-        // --- CONFIGURABLES ---
+        // --- FUNCIONALIDADES ---
 
-            // RESISTENCIA al comenzar el juego de las torres 1 y 2
-            int resistencia_torres [2];                             ///1
+            // CONFIG
+                // RESISTENCIA al comenzar el juego de las torres 1 y 2
+                int resistencia_torres [2];                             ///1
 
-            // CANTIDAD de enanos y elfos al principio de cada nivel
-            int enanos_inicio [CANTIDAD_NIVELES];                   /// 2
-            int elfos_inicio [CANTIDAD_NIVELES];                    /// 3
+                // CANTIDAD de enanos y elfos al principio de cada nivel
+                int enanos_inicio [CANTIDAD_NIVELES];                   /// 2
+                int elfos_inicio [CANTIDAD_NIVELES];                    /// 3
 
-            // CANTIDAD | COSTO T1 | COSTO T2 : de enanos y elfos extra
-            int enanos_extra [3];                                   /// 4
-            int elfos_extra [3];                                   /// 5
+                // CANTIDAD | COSTO T1 | COSTO T2 : de enanos y elfos extra
+                int enanos_extra [3];                                   /// 4
+                int elfos_extra [3];                                   /// 5
 
-            // FALLO | CRITICO : de enanos y elfos
-            int enanos_animo [2];                                   /// 6
-            int elfos_animo [2];                                   /// 7
+                // FALLO | CRITICO : de enanos y elfos
+                int enanos_animo [2];                                   /// 6
+                int elfos_animo [2];                                   /// 7
 
-            // tiempo entre turnos 
-            float velocidad;                                        /// 8
+                // tiempo entre turnos 
+                float velocidad;                                        /// 8
 
-            // archivo que guarda los caminos del juego
-            nombre_archivo_t caminos;                               /// 9
-        // --- CONFIGURABLES ---
+                // archivo que guarda los caminos del juego
+                nombre_archivo_t caminos;                               /// 9
+            // CONFIG
 
+            // archivo que guarda la grabacion del juego
             nombre_archivo_t grabacion;
 
+            // archivo que guarda el puntaje del juego
+            nombre_archivo_t ranking;
+
+        // --- FUNCIONALIDADES ---
+
+
         // --- UTILES --
+
+            // generar caminos cual TP2
+            bool caminos_random;
 
             // regeneracion de vida por nivel
             int bonus_resistencia;

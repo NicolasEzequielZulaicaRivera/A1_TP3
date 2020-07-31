@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "../constantes.h"
 #include "../funcionalidades/configuracion.h"
+#include "../funcionalidades/caminos.h"
 #include "../utiles/pedir_datos.h" 
 #include "../funcionalidades/animos.h"
 #include "defendiendo_torres.h"
@@ -162,9 +163,10 @@
      *  3 > Entrada Sur
      *  Default > Nivel vacio
      */
-    static nivel_t nuevo_nivel( int nivel, configuracion_t configuracion );
+    static nivel_t nuevo_nivel( int nivel, configuracion_t configuracion, caminos_t* caminos );
 
     // Generan los caminos del nivel segun sus caracteristicas y la coniguracion
+    static void generar_caminos( nivel_t* nivel, caminos_t* caminos );
     static void generar_camino_1( nivel_t* nivel, caracteristicas_nivel_t caracteristicas_nivel , configuracion_t configuracion, bool cruzado );
     static void generar_extremos_camino_1( coordenada_t* entrada, coordenada_t* torre,
         caracteristicas_nivel_t caracteristicas_nivel, bool cruzado );
@@ -225,7 +227,7 @@
     // pasa el juego de nivel, 
     // aplicando los bonus correspoindientes a la configuracion
     static void pasar_de_nivel( juego_t* juego , configuracion_t configuracion, 
-        caracteristicas_nivel_t* caracteristicas_nivel  );
+        caracteristicas_nivel_t* caracteristicas_nivel, caminos_t* caminos  );
 
     // Carga las caracteristicas correspondientes de la configuracion en las caracteristicas del nivel
     void cargar_caracteristicas_nivel( configuracion_t configuracion, 
@@ -301,16 +303,20 @@ void jugar( int argc , char *argv [] ){
 
         int turno = 0;
         caracteristicas_nivel_t caracteristicas_nivel;
+        caminos_t caminos;
+        if( obtener_caminos( &caminos, configuracion.caminos ) == INVALIDO )
+            return;
+
         juego->nivel_actual = 0;
         juego->nivel.tope_enemigos = 0;
-        juego->nivel = nuevo_nivel( juego->nivel_actual, configuracion );
+        juego->nivel = nuevo_nivel( juego->nivel_actual, configuracion, &caminos );
 
         while( estado_juego( *juego) == ESTADO_JUGANDO ){
 
             if( estado_nivel( juego->nivel ) == ESTADO_GANADO  ){
                 
                 turno = 0;
-                pasar_de_nivel( juego , configuracion, &caracteristicas_nivel );
+                pasar_de_nivel( juego , configuracion, &caracteristicas_nivel , &caminos);
                 
             }else{
                 
@@ -328,13 +334,13 @@ void jugar( int argc , char *argv [] ){
     }
 
     void pasar_de_nivel( juego_t* juego , configuracion_t configuracion, 
-        caracteristicas_nivel_t* caracteristicas_nivel  ){
+        caracteristicas_nivel_t* caracteristicas_nivel, caminos_t* caminos  ){
 
         juego->nivel_actual ++;
         *caracteristicas_nivel = buscar_caracteristicas_nivel( juego->nivel_actual );
         cargar_caracteristicas_nivel( configuracion,caracteristicas_nivel );
 
-        juego->nivel = nuevo_nivel( juego->nivel_actual, configuracion );
+        juego->nivel = nuevo_nivel( juego->nivel_actual, configuracion, caminos );
         mensaje_nuevo_nivel( juego->nivel_actual );
 
         bonus_nuevo_nivel( juego , configuracion );
@@ -459,7 +465,7 @@ void jugar( int argc , char *argv [] ){
         tocar_para_continuar();
     } 
 
-    nivel_t nuevo_nivel( int nivel , configuracion_t configuracion ){
+    nivel_t nuevo_nivel( int nivel , configuracion_t configuracion , caminos_t* caminos){
 
         nivel_t nuevo_nivel;
 
@@ -468,29 +474,31 @@ void jugar( int argc , char *argv [] ){
         nuevo_nivel.tope_defensores = 0;
         nuevo_nivel.tope_enemigos = 0;
         nuevo_nivel.max_enemigos_nivel = 0;
+        nuevo_nivel.numero = nivel;
 
         caracteristicas_nivel_t caracteristicas_nivel;
-        caracteristicas_nivel.num = 0;
 
         caracteristicas_nivel = buscar_caracteristicas_nivel( nivel );
 
-        
+        // CAMINOS       
         if( nivel <= CANTIDAD_NIVELES ){
 
-
-            bool cruzado = ( rand()%configuracion.rareza_cruzado == 0 );
-
-            nuevo_nivel.max_enemigos_nivel = caracteristicas_nivel.orcos;
-
-            //CAMINO 1
-            generar_camino_1( &nuevo_nivel, caracteristicas_nivel, configuracion, cruzado);
             
 
-            //CAMINO 2
-            generar_camino_2( &nuevo_nivel, caracteristicas_nivel, configuracion, cruzado);     
+            if( configuracion.caminos_random ){// TP2
+                bool cruzado = ( rand()%configuracion.rareza_cruzado == 0 );
+                generar_camino_1( &nuevo_nivel, caracteristicas_nivel, configuracion, cruzado);
+                generar_camino_2( &nuevo_nivel, caracteristicas_nivel, configuracion, cruzado);     
+            }else{
+
+                generar_caminos( &nuevo_nivel, caminos );   
+            }
+
+            nuevo_nivel.max_enemigos_nivel = caracteristicas_nivel.orcos;
         }
 
-
+        
+        // ORCOS
         for(int i = 0; i<nuevo_nivel.max_enemigos_nivel; i++){
             nuevo_nivel.enemigos[i].vida= RESISTENCIA_ORCO + rand() %(RESISTENCIA_ORCO_RAND+1) ;
             nuevo_nivel.enemigos[i].camino = INVALIDO;
@@ -500,6 +508,22 @@ void jugar( int argc , char *argv [] ){
         return nuevo_nivel;
     }
 
+    void generar_caminos( nivel_t* nivel, caminos_t* caminos ){
+
+        int i, _nivel = nivel->numero -1;
+
+        nivel->tope_camino_1 = caminos->topes[_nivel][0];
+        for( i=0; i < caminos->topes[_nivel][0]; i++ ){
+            nivel->camino_1[i].fil = caminos->caminos[_nivel][0][i].fil;
+            nivel->camino_1[i].col = caminos->caminos[_nivel][0][i].col;
+        }
+
+        nivel->tope_camino_2 = caminos->topes[_nivel][1] ;
+        for( i=0; i < caminos->topes[_nivel][1]; i++ ){
+            nivel->camino_2[i].fil = caminos->caminos[_nivel][1][i].fil;
+            nivel->camino_2[i].col = caminos->caminos[_nivel][1][i].col;
+        }
+    }
     void generar_camino(coordenada_t camino[MAX_LONGITUD_CAMINO], 
         int* tope_camino, coordenada_t entrada, coordenada_t torre, 
         int dimension, configuracion_t configuracion ){
@@ -921,5 +945,32 @@ void jugar( int argc , char *argv [] ){
             strcpy(configuracion->grabacion, lectura);
         }
     // Implementacion de funciones para cargar componentes de la configuracion
-
 // ETIQUETAS
+
+void prueba(){
+
+    caminos_t caminos;
+    int i;
+    int nivel = 3;
+
+    obtener_caminos( &caminos, "_caminos.txt");
+
+    juego_t juego;
+
+    juego.nivel.tope_camino_1 = caminos.topes[nivel][0];
+
+    for( i=0; i < caminos.topes[nivel][0]; i++ ){
+        juego.nivel.camino_1[i].fil = caminos.caminos[nivel][0][i].fil;
+        juego.nivel.camino_1[i].col = caminos.caminos[nivel][0][i].col;
+    }
+
+    juego.nivel.tope_camino_2 = caminos.topes[nivel][1] ;
+    for( i=0; i < caminos.topes[nivel][1]; i++ ){
+        juego.nivel.camino_2[i].fil = caminos.caminos[nivel][1][i].fil;
+        juego.nivel.camino_2[i].col = caminos.caminos[nivel][1][i].col;
+    }
+
+
+    mostrar_juego( juego );
+
+}
