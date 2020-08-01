@@ -356,7 +356,8 @@ void jugar( int argc , char *argv [] ){
             }
         }
 
-        fclose( archivo_grabacion );
+        if( archivo_grabacion )
+            fclose( archivo_grabacion );
 
         mensaje_terminar_juego( estado_juego( *juego) );
 

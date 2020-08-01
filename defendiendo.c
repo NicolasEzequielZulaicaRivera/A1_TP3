@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #include "constantes.h"
 #include "funcionalidades/configuracion.h"
@@ -33,11 +35,19 @@
 
 	// muestra los argumentos que puede recibir el programa 
 	void mostrar_opciones();
+
+	// crea los directorios necesarios para el funcionamiento del programa 
+	void iniciar_directorios();
+
+	// funcion para debuggear
+	void prueba();
 // Declaraciones
 
 int main(int argc , char *argv []){
 
 	srand( (unsigned int) time(NULL));
+
+	iniciar_directorios();
 
 	if( argc == 3 && strcmp(argv[1],OPCION_CREAR_CONFIG)==0 ){
 		crear_config( argv[2] );
@@ -68,7 +78,7 @@ int main(int argc , char *argv []){
 	}
 
 	if( argc > 1 && strcmp(argv[1],"p" )==0 ){
-		//prueba();
+		prueba();
 		return 0;
 	}
 
@@ -105,5 +115,39 @@ int main(int argc , char *argv []){
 
 		printf("\n\n");
 	}
-// Implementaciones
 
+void iniciar_directorios(){
+
+	nombre_archivo_t ruta;
+
+	strcpy(ruta,RUTA_CONFIGURACIONES);
+	if( access( ruta, F_OK ) == INVALIDO ){
+		mkdir(RUTA_CONFIGURACIONES, 0700);
+	}
+
+	strcpy(ruta,RUTA_CAMINOS);
+	if( access( ruta, F_OK ) == INVALIDO ){
+		mkdir(RUTA_CAMINOS, 0700);
+	}
+	
+	strcpy(ruta,RUTA_RANKING);
+	if( access( ruta, F_OK ) == INVALIDO ){
+		mkdir(RUTA_RANKING, 0700);
+	}
+	
+	strcpy(ruta,RUTA_GRABACION);
+	if( access( ruta, F_OK ) == INVALIDO ){
+		mkdir(RUTA_GRABACION, 0700);
+	}
+
+	return;
+}
+
+void prueba(){
+
+	printf("\nPrueba\n");
+
+	return;
+}
+
+// Implementaciones
