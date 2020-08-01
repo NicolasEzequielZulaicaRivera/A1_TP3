@@ -335,8 +335,11 @@ void jugar( int argc , char *argv [] ){
                 
                 turno ++;
 
-                mostrar_juego( *juego );
-                detener_el_tiempo( configuracion.velocidad );
+                if( configuracion.velocidad > 0 ){
+                    
+                    mostrar_juego( *juego );
+                    detener_el_tiempo( configuracion.velocidad );
+                }
             }
         }
 
@@ -945,18 +948,24 @@ void jugar( int argc , char *argv [] ){
         return MULTIPLICADOR_PUNTAJE * juego.orcos_muertos /
         (
             1 + 
-            configuracion.resistencia_torres[0] +
-            configuracion.resistencia_torres[1] +
+
+            (2*configuracion.resistencia_torres[0] - juego.torres.resistencia_torre_1)/3 +
+            (2*configuracion.resistencia_torres[1] - juego.torres.resistencia_torre_2)/3 +
+
+            (
             configuracion.enanos_inicio[0] +
             configuracion.enanos_inicio[1] +
             configuracion.enanos_inicio[2] +
             configuracion.enanos_inicio[3] +
+
             configuracion.elfos_inicio[0] +
             configuracion.elfos_inicio[1] +
             configuracion.elfos_inicio[2] +
-            configuracion.elfos_inicio[3] +
-            configuracion.enanos_extra[0] +
-            configuracion.elfos_extra[0]
+            configuracion.elfos_inicio[3]
+            ) *2 +
+
+            configuracion.enanos_extra[0] - juego.torres.enanos_extra +
+            configuracion.elfos_extra[0] - juego.torres.elfos_extra
         ) ;
     }
 // JUEGO (¡)

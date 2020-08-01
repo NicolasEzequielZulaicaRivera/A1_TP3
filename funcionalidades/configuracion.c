@@ -293,7 +293,7 @@
 
 		pedir_float( &aux, (float)MIN_INT, (float)MAX_INT, 
 			"- Velocidad" );
-		if( aux > 0 )
+		if( aux >= 0 )
 			configuracion->velocidad = aux;
 		else
 			configuracion->velocidad = INVALIDO;
