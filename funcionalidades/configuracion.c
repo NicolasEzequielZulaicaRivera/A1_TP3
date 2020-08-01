@@ -68,23 +68,23 @@
 // ETIQUETAS
 
    	// Declaracion de funciones para cargar componentes de la configuracion
-	   	void cargar_resistencia_torres
+	   	static void cargar_resistencia_torres
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//1
-	   	void cargar_enanos_inicio
+	   	static void cargar_enanos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//2
-	   	void cargar_elfos_inicio
+	   	static void cargar_elfos_inicio
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//3
-	   	void cargar_enanos_extra
+	   	static void cargar_enanos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//4
-	   	void cargar_elfos_extra
+	   	static void cargar_elfos_extra
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//5
-	   	void cargar_enanos_animo
+	   	static void cargar_enanos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//6
-	   	void cargar_elfos_animo
+	   	static void cargar_elfos_animo
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//7
-	   	void cargar_velocidad
+	   	static void cargar_velocidad
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//8
-	   	void cargar_caminos
+	   	static void cargar_caminos
 	   		( configuracion_t* configuracion, char lectura [MAX_NOMBRE] );//9
 
 	   	// Funcion que carga enteros separados por un SEPARADOR
@@ -145,15 +145,15 @@
 // CREAR CONFIG
 
 	// Subrutinas para pedir al usuario los diferentes componentes de la configuracion
-	void pedir_config(configuracion_t* configuracion);
-	void pedir_torres(configuracion_t* configuracion);
-	void pedir_defensores_inicio(configuracion_t* configuracion);
-	void pedir_defensores_extra(configuracion_t* configuracion);
-	void pedir_defensores_animos(configuracion_t* configuracion);
-	void pedir_otros(configuracion_t* configuracion);
+	static void pedir_config(configuracion_t* configuracion);
+	static void pedir_torres(configuracion_t* configuracion);
+	static void pedir_defensores_inicio(configuracion_t* configuracion);
+	static void pedir_defensores_extra(configuracion_t* configuracion);
+	static void pedir_defensores_animos(configuracion_t* configuracion);
+	static void pedir_otros(configuracion_t* configuracion);
 
 	// Subrutina que guarda una configuracion en cierta ruta
-	void guardar_config( configuracion_t configuracion, nombre_archivo_t ruta );
+	static void guardar_config( configuracion_t configuracion, nombre_archivo_t ruta );
 
 	
 	void crear_config( nombre_archivo_t nombre_archivo ){
@@ -348,7 +348,7 @@
 	// Subrutina de cargar_config
 	// cargara los datos de un archivo de configuracion en una configuracion sin verificar
 	// pre: ruta correcta
-    void cargar_config_archivo( configuracion_t* configuracion, 
+    static void cargar_config_archivo( configuracion_t* configuracion, 
         nombre_archivo_t ruta );
 
     void cargar_config( configuracion_t* configuracion, 

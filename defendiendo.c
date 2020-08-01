@@ -5,6 +5,7 @@
 
 #include "constantes.h"
 #include "funcionalidades/configuracion.h"
+#include "funcionalidades/grabacion.h"
 #include "funcionalidades/caminos.h"
 #include "funcionalidades/ranking.h"
 #include "juego/juego.h"
@@ -20,6 +21,12 @@
 	static const opcion_t OPCION_CREAR_CAMINOS = "crear_camino";
 
 	static const opcion_t OPCION_RANKING = "ranking";
+	static const opcion_t OPCION_RANKING_CONFIG = "config";
+	static const opcion_t OPCION_RANKING_LISTAR = "listar";
+
+	static const opcion_t OPCION_GRABACION = "poneme_la_repe";
+	static const opcion_t OPCION_GRABACION_ARCHIVO = "grabacion";
+	static const opcion_t OPCION_GRABACION_VELOCIDAD = "velocidad";
 // Constantes
 
 // Declaraciones
@@ -54,8 +61,14 @@ int main(int argc , char *argv []){
 		return 0;
 	}
 
+	if( argc > 1 && strcmp(argv[1],OPCION_GRABACION )==0 ){
+
+		grabacion( argc , argv );
+		return 0;
+	}
+
 	if( argc > 1 && strcmp(argv[1],"p" )==0 ){
-		prueba();
+		//prueba();
 		return 0;
 	}
 
@@ -77,6 +90,17 @@ int main(int argc , char *argv []){
 
 		printf("\n %s \n", OPCION_CREAR_CONFIG);
 		printf("\t <nombre.txt> \n");
+
+		printf("\n %s \n", OPCION_CREAR_CAMINOS);
+		printf("\t <nombre.txt> \n");
+
+		printf("\n %s \n", OPCION_RANKING);
+		printf("\t %s=<config.txt> (opcional)\n", OPCION_RANKING_CONFIG);
+		printf("\t %s=<int> (opcional)\n", OPCION_RANKING_LISTAR);
+
+		printf("\n %s \n", OPCION_GRABACION);
+		printf("\t %s=<grabacion.dat> \n", OPCION_GRABACION_ARCHIVO);
+		printf("\t %s=<float> (opcional)\n", OPCION_GRABACION_VELOCIDAD);
 
 
 		printf("\n\n");

@@ -41,38 +41,38 @@
 // CREAR CAMINOS
 
 	// Subrutina para pedir al usuario los diferentes caminos
-	void pedir_caminos(caminos_t* caminos);
+	static void pedir_caminos(caminos_t* caminos);
 
 	// Carga los extremos de los caminos segun la constante EXTREMOS_CAMINOS
-	void cargar_extremos_caminos(caminos_t* caminos);
+	static void cargar_extremos_caminos(caminos_t* caminos);
 	
 	// Subrutina para pedir al usuario los caminos de un nivel
-	void pedir_caminos_nivel(camino_t caminos [CANTIDAD_TORRES], int topes [CANTIDAD_TORRES]);
+	static void pedir_caminos_nivel(camino_t caminos [CANTIDAD_TORRES], int topes [CANTIDAD_TORRES]);
 
 	// Subrutina para pedir al usuario un camino al recibir un camino con extremos (tope >= 2)
 	// Mostrara por pantalla el camino mientras se introduce
-	void pedir_camino(camino_t camino, int* tope, int numero, 
+	static void pedir_camino(camino_t camino, int* tope, int numero, 
 		char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension);
 
 	// Subrutina de pedir camino
-	void iniciar_mapa_camino(camino_t camino, int tope, int numero, 
+	static void iniciar_mapa_camino(camino_t camino, int tope, int numero, 
 		char mapa[MAX_FILAS][MAX_COLUMNAS] , int dimension, char* senda);
 
 	// Subrutina para pedir al usuario un movimiento
-	void pedir_movimiento(coordenada_t* pos);
+	static void pedir_movimiento(coordenada_t* pos);
 
 	// Añade una posicion al final de un camino
 	// No comprubea la adyacencia
-	void agregar_posicion(camino_t camino, int* tope, coordenada_t pos);
+	static void agregar_posicion(camino_t camino, int* tope, coordenada_t pos);
 
 	// Subrutina que guarda caminos en cierta ruta
-	void guardar_caminos(caminos_t* caminos, nombre_archivo_t ruta );
+	static void guardar_caminos(caminos_t* caminos, nombre_archivo_t ruta );
 
 	// Subrutina que añade las coordenadas de un camino en cierto archivo abierto para escritura
-	void guardar_camino(camino_t camino, int tope, FILE* archivo );
+	static void guardar_camino(camino_t camino, int tope, FILE* archivo );
 
 	//Recibe un camino por torre con entrada y torre, y devuelve la dimension de su mapa 
-	int dimension_caminos( camino_t caminos [CANTIDAD_TORRES], int topes [CANTIDAD_TORRES] );
+	static int dimension_caminos( camino_t caminos [CANTIDAD_TORRES], int topes [CANTIDAD_TORRES] );
 
 	
 	void crear_caminos( nombre_archivo_t nombre_archivo ){
@@ -292,7 +292,7 @@
 
 // LEER CAMINOS
 
-	void inicializar_caminos( caminos_t* caminos );
+	static void inicializar_caminos( caminos_t* caminos );
 
 	int obtener_caminos( caminos_t* caminos, 
         nombre_archivo_t nombre_archivo ){

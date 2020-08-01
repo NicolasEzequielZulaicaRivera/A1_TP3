@@ -66,16 +66,14 @@ static const int PROBABILIDAD_CRITICO_BUENA = 25;
 
 
 /// Declaracion de Funciones
-bool c_en_arreglo(char dato,const char valores_validos[],const int n_valores_validos);
-void c_pedir_dato(char* dato,const char valores_validos[],const int n_valores_validos,char mensaje[]);
-bool i_en_rango(int dato,const int min,const int max);
-void i_pedir_dato(int* dato,const int min,const int max,char mensaje[]);
+static bool c_en_arreglo(char dato,const char valores_validos[],const int n_valores_validos);
+static void c_pedir_dato(char* dato,const char valores_validos[],const int n_valores_validos,char mensaje[]);
+static bool i_en_rango(int dato,const int min,const int max);
+static void i_pedir_dato(int* dato,const int min,const int max,char mensaje[]);
 
-int calcular_vel_viento(int dia);
-int calcular_humedad(char hora);
-char calcular_animo(char pie, char cena, int durmio);
-
-void historia(int vel_viento, int humedad, char animo_legolas, char animo_gimli);
+static int calcular_vel_viento(int dia);
+static int calcular_humedad(char hora);
+static char calcular_animo(char pie, char cena, int durmio);
 
 /// -- PROGRAMA PRINCIPAL --
 

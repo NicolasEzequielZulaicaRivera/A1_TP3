@@ -13,6 +13,7 @@
 #include "../utiles/utiles.h"
 
 #include "../funcionalidades/configuracion.h"
+#include "../funcionalidades/grabacion.h"
 #include "../funcionalidades/caminos.h"
 #include "../funcionalidades/ranking.h"
 #include "../funcionalidades/animos.h"
@@ -321,6 +322,15 @@ void jugar( int argc , char *argv [] ){
         juego->nivel.tope_enemigos = 0;
         juego->nivel = nuevo_nivel( juego->nivel_actual, configuracion, &caminos );
 
+        bool grabar = strcmp(configuracion.grabacion,"");
+        nombre_archivo_t grabacion;
+        strcpy(grabacion,configuracion.grabacion);
+        cargar_ruta_grabacion(grabacion);
+        FILE* archivo_grabacion = NULL;
+        if( grabar ){
+            archivo_grabacion = fopen(grabacion,"wb");
+        }
+
         while( estado_juego( *juego) == ESTADO_JUGANDO ){
 
             if( estado_nivel( juego->nivel ) == ESTADO_GANADO  ){
@@ -340,8 +350,13 @@ void jugar( int argc , char *argv [] ){
                     mostrar_juego( *juego );
                     detener_el_tiempo( configuracion.velocidad );
                 }
+                if( grabar ){
+                    fwrite( juego, sizeof(juego_t), 1,archivo_grabacion );
+                }
             }
         }
+
+        fclose( archivo_grabacion );
 
         mensaje_terminar_juego( estado_juego( *juego) );
 
